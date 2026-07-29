@@ -1,11 +1,11 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
-export default function JoinPage() {
+function JoinForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const token = searchParams.get('token');
@@ -41,6 +41,27 @@ export default function JoinPage() {
   };
 
   return (
+    <CardContent className="text-center space-y-4">
+      {success ? (
+        <p className="text-green-400">Successfully joined! Redirecting to dashboard...</p>
+      ) : (
+        <>
+          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <Button
+            onClick={handleJoin}
+            className="w-full bg-indigo-600 hover:bg-indigo-700"
+            disabled={loading}
+          >
+            {loading ? 'Joining...' : 'Accept Invite'}
+          </Button>
+        </>
+      )}
+    </CardContent>
+  );
+}
+
+export default function JoinPage() {
+  return (
     <main className="flex min-h-screen items-center justify-center bg-gray-950">
       <Card className="w-full max-w-md bg-gray-900 border-gray-800 text-white">
         <CardHeader className="text-center">
@@ -49,22 +70,9 @@ export default function JoinPage() {
             You have been invited to join an organization on Blockspace
           </CardDescription>
         </CardHeader>
-        <CardContent className="text-center space-y-4">
-          {success ? (
-            <p className="text-green-400">Successfully joined! Redirecting to dashboard...</p>
-          ) : (
-            <>
-              {error && <p className="text-red-400 text-sm">{error}</p>}
-              <Button
-                onClick={handleJoin}
-                className="w-full bg-indigo-600 hover:bg-indigo-700"
-                disabled={loading}
-              >
-                {loading ? 'Joining...' : 'Accept Invite'}
-              </Button>
-            </>
-          )}
-        </CardContent>
+        <Suspense fallback={<CardContent className="text-center text-gray-400">Loading invite...</CardContent>}>
+          <JoinForm />
+        </Suspense>
       </Card>
     </main>
   );

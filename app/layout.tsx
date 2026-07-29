@@ -18,6 +18,8 @@ export const metadata: Metadata = {
   description: 'Resource & event management for every organization',
 };
 
+import Navigation from '@/components/Navigation';
+
 export default function RootLayout({
   children,
 }: {
@@ -25,8 +27,11 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
-        <Providers>{children}</Providers>
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased bg-gray-950 text-white min-h-screen flex flex-col`}>
+        <Providers>
+          <Navigation />
+          <div className="flex-1">{children}</div>
+        </Providers>
       </body>
     </html>
   );

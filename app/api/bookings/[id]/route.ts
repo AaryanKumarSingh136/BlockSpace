@@ -17,7 +17,7 @@ export async function PATCH(
     await connectDB();
     const user = await User.findOne({ email: session.user.email });
 
-    if (!user?.org_id || !['manager', 'orgAdmin'].includes(user.role)) {
+    if (!user?.org_id || !['manager', 'orgAdmin', 'superAdmin'].includes(user.role)) {
       return NextResponse.json({ message: 'Only managers or admins can update bookings' }, { status: 403 });
     }
 
@@ -37,8 +37,19 @@ export async function PATCH(
       return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
     }
 
+    // ── REAL-TIME SOCKET BROADCAST ──────────────────────────────────
+    if ((global as any).io) {
+      const room = `org_${user.org_id.toString()}`;
+      (global as any).io.to(room).emit('resource-updated', {
+        org_id: user.org_id.toString(),
+        resource_id: booking.resource_id.toString(),
+        action: `booking_${status}`,
+        booking,
+      });
+    }
+
     return NextResponse.json({ message: 'Booking updated', booking });
-  } catch (error) {
-    return NextResponse.json({ message: 'Something went wrong', error }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message || 'Something went wrong', error }, { status: 500 });
   }
 }

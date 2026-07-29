@@ -6,6 +6,8 @@ export interface IUser extends Document {
   passwordHash: string;
   role: 'member' | 'manager' | 'orgAdmin' | 'superAdmin';
   org_id?: mongoose.Types.ObjectId;
+  club_id?: mongoose.Types.ObjectId;
+  dept_id?: mongoose.Types.ObjectId;
   joined_at: Date;
 }
 
@@ -19,6 +21,8 @@ const UserSchema = new Schema<IUser>({
     default: 'member',
   },
   org_id: { type: Schema.Types.ObjectId, ref: 'Organization' },
+  club_id: { type: Schema.Types.ObjectId, ref: 'Club' },
+  dept_id: { type: Schema.Types.ObjectId, ref: 'Department' },
   joined_at: { type: Date, default: Date.now },
 });
 

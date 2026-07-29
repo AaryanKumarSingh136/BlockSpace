@@ -6,17 +6,23 @@ import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 
 interface ExtendedUser extends NextAuthUser {
+  id?: string;
   role?: string;
   org_id?: string;
+  club_id?: string;
+  dept_id?: string;
 }
 
 interface ExtendedSession extends Session {
   user: {
+    id?: string;
     name?: string | null;
     email?: string | null;
     image?: string | null;
     role?: string;
     org_id?: string;
+    club_id?: string;
+    dept_id?: string;
   };
 }
 
@@ -44,23 +50,42 @@ const handler = NextAuth({
           email: user.email,
           role: user.role,
           org_id: user.org_id?.toString(),
+          club_id: user.club_id?.toString(),
+          dept_id: user.dept_id?.toString(),
         } as ExtendedUser;
       },
     }),
   ],
   callbacks: {
-    async jwt({ token, user }) {
+    async jwt({ token, user, trigger }) {
       if (user) {
         const extUser = user as ExtendedUser;
+        token.id = extUser.id;
         token.role = extUser.role;
         token.org_id = extUser.org_id;
+        token.club_id = extUser.club_id;
+        token.dept_id = extUser.dept_id;
+      }
+      // Re-fetch latest user role/org/club/dept on session update or token refresh
+      if (token.id && (!token.org_id || trigger === 'update')) {
+        await connectDB();
+        const dbUser = await User.findById(token.id);
+        if (dbUser) {
+          token.role = dbUser.role;
+          token.org_id = dbUser.org_id?.toString();
+          token.club_id = dbUser.club_id?.toString();
+          token.dept_id = dbUser.dept_id?.toString();
+        }
       }
       return token;
     },
     async session({ session, token }: { session: ExtendedSession; token: JWT }) {
       if (session.user) {
+        session.user.id = token.id as string;
         session.user.role = token.role as string;
         session.user.org_id = token.org_id as string;
+        session.user.club_id = token.club_id as string;
+        session.user.dept_id = token.dept_id as string;
       }
       return session;
     },

@@ -51,7 +51,7 @@ export async function POST(req: Request) {
 
     // ── MONGODB TRANSACTION ─────────────────────────────────────────
     const dbSession = await mongoose.startSession();
-    let booking;
+    let booking: any;
 
     await dbSession.withTransaction(async () => {
       [booking] = await Booking.create([{
@@ -66,9 +66,27 @@ export async function POST(req: Request) {
 
     dbSession.endSession();
 
+    // ── REAL-TIME SOCKET BROADCAST ──────────────────────────────────
+    if ((global as any).io) {
+      const room = `org_${user.org_id.toString()}`;
+      (global as any).io.to(room).emit('resource-updated', {
+        org_id: user.org_id.toString(),
+        resource_id: resource_id.toString(),
+        action: 'booking_created',
+        booking: {
+          _id: booking._id.toString(),
+          title: booking.title,
+          start_time: booking.start_time,
+          end_time: booking.end_time,
+          status: booking.status,
+          user: { name: user.name, email: user.email },
+        },
+      });
+    }
+
     return NextResponse.json({ message: 'Booking created', booking }, { status: 201 });
-  } catch (error) {
-    return NextResponse.json({ message: 'Something went wrong', error }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message || 'Something went wrong', error }, { status: 500 });
   }
 }
 
@@ -91,7 +109,7 @@ export async function GET() {
       .sort({ start_time: 1 });
 
     return NextResponse.json({ bookings });
-  } catch (error) {
-    return NextResponse.json({ message: 'Something went wrong', error }, { status: 500 });
+  } catch (error: any) {
+    return NextResponse.json({ message: error.message || 'Something went wrong', error }, { status: 500 });
   }
 }

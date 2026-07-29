@@ -1,0 +1,486 @@
+'use client';
+
+import { useState, useEffect, useCallback } from 'react';
+import { useSession } from 'next-auth/react';
+import { getSocket } from '@/lib/socket';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+
+interface ResourceItem {
+  _id: string;
+  name: string;
+  type: string;
+  capacity?: number;
+  current_status: 'available' | 'occupied' | 'maintenance';
+  club_id?: { _id: string; name: string };
+  dept_id?: { _id: string; name: string };
+}
+
+interface BookingItem {
+  _id: string;
+  resource_id: { _id: string; name: string } | string;
+  user_id: { name: string; email: string } | string;
+  title: string;
+  start_time: string;
+  end_time: string;
+  status: 'pending' | 'approved' | 'rejected' | 'cancelled';
+}
+
+export default function AvailabilityPage() {
+  const { data: session } = useSession();
+  const [resources, setResources] = useState<ResourceItem[]>([]);
+  const [bookings, setBookings] = useState<BookingItem[]>([]);
+  const [isConnected, setIsConnected] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  // Quick book modal state
+  const [selectedResource, setSelectedResource] = useState<ResourceItem | null>(null);
+  const [bookingForm, setBookingForm] = useState({
+    title: '',
+    start_time: '',
+    end_time: '',
+  });
+
+  const [bookingLoading, setBookingLoading] = useState(false);
+  const [alertMsg, setAlertMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+
+  // Filters
+  const [filterType, setFilterType] = useState<string>('all');
+  const [searchQuery, setSearchQuery] = useState<string>('');
+
+  const fetchDashboardData = useCallback(async () => {
+    try {
+      const [resResources, resBookings] = await Promise.all([
+        fetch('/api/resources'),
+        fetch('/api/bookings'),
+      ]);
+
+      if (resResources.ok) {
+        const data = await resResources.json();
+        setResources(data.resources || []);
+      }
+      if (resBookings.ok) {
+        const data = await resBookings.json();
+        setBookings(data.bookings || []);
+      }
+    } catch (err) {
+      console.error('Error fetching live availability:', err);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  // Socket.io Real-Time Setup
+  useEffect(() => {
+    const socket = getSocket();
+
+    function onConnect() {
+      setIsConnected(true);
+      if (session?.user?.org_id) {
+        socket.emit('join-org', session.user.org_id);
+      }
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onResourceUpdated(data: any) {
+      console.log('[Socket.io] Live event received:', data);
+      // Re-fetch clean state from server when a resource update occurs in this org
+      fetchDashboardData();
+    }
+
+    if (socket.connected) {
+      setIsConnected(true);
+      if (session?.user?.org_id) {
+        socket.emit('join-org', session.user.org_id);
+      }
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('resource-updated', onResourceUpdated);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('resource-updated', onResourceUpdated);
+      if (session?.user?.org_id) {
+        socket.emit('leave-org', session.user.org_id);
+      }
+    };
+  }, [session?.user?.org_id, fetchDashboardData]);
+
+  // Determine active booking for a given resource
+  const getActiveBooking = (resourceId: string) => {
+    const now = new Date();
+    return bookings.find((b) => {
+      const resId = typeof b.resource_id === 'object' ? b.resource_id._id : b.resource_id;
+      if (resId !== resourceId) return false;
+      if (!['pending', 'approved'].includes(b.status)) return false;
+
+      const start = new Date(b.start_time);
+      const end = new Date(b.end_time);
+      return start <= now && now <= end;
+    });
+  };
+
+  // Determine resource status (available vs occupied)
+  const getResourceStatus = (r: ResourceItem) => {
+    if (r.current_status === 'maintenance') return 'maintenance';
+    const active = getActiveBooking(r._id);
+    if (active) return active.status === 'approved' ? 'occupied' : 'pending_approval';
+    return 'available';
+  };
+
+  // OPTIMISTIC BOOKING WORKFLOW
+  const handleOptimisticBook = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedResource) return;
+
+    setBookingLoading(true);
+    setAlertMsg(null);
+
+    const prevBookings = [...bookings];
+    const prevResources = [...resources];
+
+    // 1. OPTIMISTIC UPDATE: Create temporary booking in state immediately
+    const tempBookingId = `temp-${Date.now()}`;
+    const tempBooking: BookingItem = {
+      _id: tempBookingId,
+      resource_id: { _id: selectedResource._id, name: selectedResource.name },
+      user_id: { name: session?.user?.name || 'You', email: session?.user?.email || '' },
+      title: bookingForm.title,
+      start_time: bookingForm.start_time,
+      end_time: bookingForm.end_time,
+      status: 'pending',
+    };
+
+    setBookings((prev) => [...prev, tempBooking]);
+
+    try {
+      // 2. NETWORK CALL
+      const res = await fetch('/api/bookings', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          resource_id: selectedResource._id,
+          title: bookingForm.title,
+          start_time: bookingForm.start_time,
+          end_time: bookingForm.end_time,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        // 3. ROLLBACK ON FAILURE
+        setBookings(prevBookings);
+        setResources(prevResources);
+        setAlertMsg({ type: 'error', text: `Booking Failed (Rolled Back): ${data.message}` });
+        setBookingLoading(false);
+        return;
+      }
+
+      // 4. CONFIRM SUCCESS & BROADCAST VIA SOCKET
+      setAlertMsg({ type: 'success', text: 'Resource booked successfully! Live dashboard updated.' });
+      setSelectedResource(null);
+      setBookingForm({ title: '', start_time: '', end_time: '' });
+
+      // Emit socket event to notify other connected clients in room
+      const socket = getSocket();
+      socket.emit('resource-updated', {
+        org_id: session?.user?.org_id,
+        resource_id: selectedResource._id,
+        action: 'booking_created',
+      });
+
+      fetchDashboardData();
+    } catch (err: any) {
+      // ROLLBACK ON EXCEPTION
+      setBookings(prevBookings);
+      setResources(prevResources);
+      setAlertMsg({ type: 'error', text: `Network Error: ${err.message}. Rolled back.` });
+    } finally {
+      setBookingLoading(false);
+    }
+  };
+
+  // Filter resources
+  const filteredResources = resources.filter((r) => {
+    if (filterType !== 'all' && r.type !== filterType) return false;
+    if (searchQuery && !r.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+    return true;
+  });
+
+  return (
+    <main className="flex min-h-screen flex-col bg-gray-950 text-white p-4 md:p-8">
+      <div className="max-w-6xl mx-auto w-full space-y-8">
+
+        {/* Dashboard Header & Live Indicator */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+          <div>
+            <h1 className="text-3xl font-bold tracking-tight">Live Resource Availability</h1>
+            <p className="text-gray-400 text-sm mt-1">
+              Real-time WebSocket dashboard for instant conflict-free resource tracking
+            </p>
+          </div>
+
+          {/* Connection Indicator Badge */}
+          <div className="flex items-center gap-2">
+            <div
+              className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border backdrop-blur-sm transition-all ${
+                isConnected
+                  ? 'bg-emerald-950/80 text-emerald-400 border-emerald-700/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
+                  : 'bg-yellow-950/80 text-yellow-400 border-yellow-700/60'
+              }`}
+            >
+              <span
+                className={`w-2.5 h-2.5 rounded-full ${
+                  isConnected ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]' : 'bg-yellow-400'
+                }`}
+              />
+              {isConnected ? 'Live Connected (Socket.io)' : 'Connecting to Server...'}
+            </div>
+          </div>
+        </div>
+
+        {/* Alert Notifications */}
+        {alertMsg && (
+          <div
+            className={`p-4 rounded-lg border text-sm font-medium flex items-center justify-between ${
+              alertMsg.type === 'success'
+                ? 'bg-green-950/70 border-green-800 text-green-300'
+                : 'bg-red-950/70 border-red-800 text-red-300'
+            }`}
+          >
+            <span>{alertMsg.text}</span>
+            <button onClick={() => setAlertMsg(null)} className="text-gray-400 hover:text-white">
+              ✕
+            </button>
+          </div>
+        )}
+
+        {/* Filters Toolbar */}
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+          <div className="flex items-center gap-2 w-full sm:w-auto">
+            <Input
+              placeholder="Search resource name..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="bg-gray-800 border-gray-700 text-white w-full sm:w-64"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
+            {['all', 'room', 'desk', 'equipment', 'court'].map((type) => (
+              <button
+                key={type}
+                onClick={() => setFilterType(type)}
+                className={`px-3 py-1.5 rounded-md text-xs font-semibold capitalize transition ${
+                  filterType === type
+                    ? 'bg-indigo-600 text-white'
+                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                }`}
+              >
+                {type}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Live Availability Grid */}
+        {loading ? (
+          <div className="text-center text-gray-400 py-12">Loading live availability...</div>
+        ) : filteredResources.length === 0 ? (
+          <Card className="bg-gray-900 border-gray-800 text-gray-400 p-8 text-center">
+            No resources match your search filter.
+          </Card>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {filteredResources.map((r) => {
+              const status = getResourceStatus(r);
+              const activeBooking = getActiveBooking(r._id);
+
+              return (
+                <Card
+                  key={r._id}
+                  className={`bg-gray-900 border text-white transition-all hover:border-gray-700 flex flex-col justify-between ${
+                    status === 'occupied'
+                      ? 'border-red-900/60 shadow-lg shadow-red-950/20'
+                      : status === 'pending_approval'
+                      ? 'border-yellow-900/60'
+                      : 'border-gray-800'
+                  }`}
+                >
+                  <CardHeader className="pb-3">
+                    <div className="flex items-center justify-between mb-1">
+                      <h3 className="font-bold text-lg">{r.name}</h3>
+                      <span
+                        className={`text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
+                          status === 'available'
+                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
+                            : status === 'occupied'
+                            ? 'bg-red-950 text-red-400 border border-red-800/80'
+                            : status === 'pending_approval'
+                            ? 'bg-yellow-950 text-yellow-400 border border-yellow-800/80'
+                            : 'bg-gray-800 text-gray-400'
+                        }`}
+                      >
+                        {status.replace('_', ' ')}
+                      </span>
+                    </div>
+                    <CardDescription className="text-gray-400 text-xs capitalize flex items-center gap-2">
+                      Type: {r.type} {r.capacity ? `• Capacity: ${r.capacity}` : ''}
+                    </CardDescription>
+                  </CardHeader>
+
+                  <CardContent className="space-y-4 pt-0">
+                    {/* Active Booking Details */}
+                    {activeBooking ? (
+                      <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 text-xs space-y-1">
+                        <div className="font-semibold text-white truncate">{activeBooking.title}</div>
+                        <div className="text-gray-400">
+                          Booked by:{' '}
+                          <span className="text-indigo-300">
+                            {typeof activeBooking.user_id === 'object'
+                              ? activeBooking.user_id.name
+                              : 'User'}
+                          </span>
+                        </div>
+                        <div className="text-gray-500 font-mono text-[11px]">
+                          {new Date(activeBooking.start_time).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}{' '}
+                          →{' '}
+                          {new Date(activeBooking.end_time).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-xs text-gray-500 italic py-2">
+                        Currently clear & ready for instant booking.
+                      </div>
+                    )}
+
+                    {/* Scoping Badges */}
+                    <div className="flex flex-wrap gap-1.5">
+                      {r.club_id?.name && (
+                        <span className="text-[11px] bg-indigo-950/70 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
+                          {r.club_id.name}
+                        </span>
+                      )}
+                      {r.dept_id?.name && (
+                        <span className="text-[11px] bg-purple-950/70 text-purple-300 border border-purple-800/60 px-2 py-0.5 rounded">
+                          {r.dept_id.name}
+                        </span>
+                      )}
+                    </div>
+
+                    {/* Action Button */}
+                    <Button
+                      onClick={() => {
+                        setSelectedResource(r);
+                        // Default start time now, end time +1hr
+                        const now = new Date();
+                        const nextHour = new Date(now.getTime() + 60 * 60 * 1000);
+                        setBookingForm({
+                          title: 'Live Event Slot',
+                          start_time: now.toISOString().slice(0, 16),
+                          end_time: nextHour.toISOString().slice(0, 16),
+                        });
+                      }}
+                      className={`w-full text-xs font-semibold ${
+                        status === 'available'
+                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
+                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                      }`}
+                    >
+                      {status === 'available' ? 'Quick Book Now' : 'Book Conflict-Free Slot'}
+                    </Button>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+        )}
+
+      </div>
+
+      {/* Quick Booking Modal */}
+      {selectedResource && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <div>
+              <h2 className="text-xl font-bold">Book {selectedResource.name}</h2>
+              <p className="text-xs text-gray-400">
+                Optimistic update: Dashboard updates instantly across all connected clients.
+              </p>
+            </div>
+
+            <form onSubmit={handleOptimisticBook} className="space-y-4">
+              <div>
+                <Label>Event / Booking Title</Label>
+                <Input
+                  placeholder="e.g. Team Planning Sync"
+                  value={bookingForm.title}
+                  onChange={(e) => setBookingForm({ ...bookingForm, title: e.target.value })}
+                  className="bg-gray-800 border-gray-700 text-white mt-1"
+                  required
+                />
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <div>
+                  <Label>Start Time</Label>
+                  <Input
+                    type="datetime-local"
+                    value={bookingForm.start_time}
+                    onChange={(e) => setBookingForm({ ...bookingForm, start_time: e.target.value })}
+                    className="bg-gray-800 border-gray-700 text-white text-xs mt-1"
+                    required
+                  />
+                </div>
+                <div>
+                  <Label>End Time</Label>
+                  <Input
+                    type="datetime-local"
+                    value={bookingForm.end_time}
+                    onChange={(e) => setBookingForm({ ...bookingForm, end_time: e.target.value })}
+                    className="bg-gray-800 border-gray-700 text-white text-xs mt-1"
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => setSelectedResource(null)}
+                  className="border-gray-700 text-gray-300"
+                >
+                  Cancel
+                </Button>
+                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={bookingLoading}>
+                  {bookingLoading ? 'Booking...' : 'Confirm Booking'}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </main>
+  );
+}
