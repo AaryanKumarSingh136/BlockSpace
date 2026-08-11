@@ -7,6 +7,16 @@ import User from '@/models/User';
 import Club from '@/models/Club';
 import Department from '@/models/Department';
 
+function slugify(text: string): string {
+  return text
+    .toString()
+    .toLowerCase()
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with -
+    .replace(/[^\w\-]+/g, '') // Remove all non-word chars
+    .replace(/\-\-+/g, '-'); // Replace multiple - with single -
+}
+
 export async function GET(req: Request) {
   try {
     const session = await getServerSession();
@@ -66,9 +76,13 @@ export async function POST(req: Request) {
 
     // Generate secret for QR JWT signing
     const qr_secret = crypto.randomBytes(32).toString('hex');
+    const baseSlug = slugify(title);
+    const randomSuffix = crypto.randomBytes(3).toString('hex');
+    const slug = `${baseSlug}-${randomSuffix}`;
 
     const event = await Event.create({
       title: title.trim(),
+      slug,
       description: description?.trim() || '',
       organizer_id: user._id,
       org_id: user.org_id,
@@ -79,6 +93,7 @@ export async function POST(req: Request) {
       capacity: parseInt(capacity),
       qr_secret,
       is_public: is_public ?? true,
+      waitlist: [],
     });
 
     return NextResponse.json({ message: 'Event created successfully', event }, { status: 201 });

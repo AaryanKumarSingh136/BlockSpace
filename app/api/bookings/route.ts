@@ -5,6 +5,7 @@ import Booking from '@/models/Booking';
 import Resource from '@/models/Resource';
 import User from '@/models/User';
 import mongoose from 'mongoose';
+import { sendBookingCreatedEmail } from '@/lib/email';
 
 export async function POST(req: Request) {
   try {
@@ -65,6 +66,11 @@ export async function POST(req: Request) {
     });
 
     dbSession.endSession();
+
+    // ── EMAIL NOTIFICATION ──────────────────────────────────────────
+    sendBookingCreatedEmail(user.email, title, resource.name, start_time).catch((err) =>
+      console.warn('Booking email error:', err)
+    );
 
     // ── REAL-TIME SOCKET BROADCAST ──────────────────────────────────
     if ((global as any).io) {

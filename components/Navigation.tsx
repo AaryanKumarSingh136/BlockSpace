@@ -10,6 +10,8 @@ export default function Navigation() {
 
   if (!session) return null;
 
+  const isAdmin = ['orgAdmin', 'superAdmin'].includes(session.user?.role || '');
+
   const navLinks = [
     { href: '/dashboard', label: 'Dashboard' },
     { href: '/availability', label: 'Live Availability', isLive: true },
@@ -17,19 +19,25 @@ export default function Navigation() {
     { href: '/resources', label: 'Resources' },
     { href: '/bookings', label: 'Bookings' },
     { href: '/hierarchy', label: 'Hierarchy & Clubs' },
-    { href: '/admin', label: 'Admin Panel' },
+    ...(isAdmin
+      ? [
+          { href: '/analytics', label: 'Analytics' },
+          { href: '/settings/branding', label: 'Branding' },
+          { href: '/admin', label: 'Admin Panel' },
+        ]
+      : []),
   ];
 
   return (
     <header className="border-b border-gray-800 bg-gray-900/80 backdrop-blur-md sticky top-0 z-50">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="flex items-center gap-8">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+        <div className="flex items-center gap-6">
           <Link href="/dashboard" className="flex items-center gap-2 font-bold text-xl text-white tracking-tight">
             <span className="bg-indigo-600 text-white px-2 py-0.5 rounded text-sm font-extrabold">B</span>
             Blockspace
           </Link>
 
-          <nav className="hidden md:flex items-center gap-1">
+          <nav className="hidden lg:flex items-center gap-1">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import connectDB from '@/lib/mongodb';
 import Booking from '@/models/Booking';
 import User from '@/models/User';
+import { sendBookingStatusEmail } from '@/lib/email';
 
 export async function PATCH(
   req: Request,
@@ -31,10 +32,19 @@ export async function PATCH(
       { _id: id, org_id: user.org_id },
       { status },
       { new: true }
-    );
+    ).populate('user_id', 'email name');
 
     if (!booking) {
       return NextResponse.json({ message: 'Booking not found' }, { status: 404 });
+    }
+
+    // Send email notification to booking owner
+    if ((booking.user_id as any)?.email) {
+      sendBookingStatusEmail(
+        (booking.user_id as any).email,
+        booking.title,
+        status
+      ).catch((err) => console.warn('Status email error:', err));
     }
 
     // ── REAL-TIME SOCKET BROADCAST ──────────────────────────────────

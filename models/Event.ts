@@ -1,7 +1,15 @@
 import mongoose, { Schema, Document } from 'mongoose';
 
+export interface IWaitlistUser {
+  user_id?: mongoose.Types.ObjectId;
+  name: string;
+  email: string;
+  created_at: Date;
+}
+
 export interface IEvent extends Document {
   title: string;
+  slug: string;
   description?: string;
   organizer_id: mongoose.Types.ObjectId;
   org_id: mongoose.Types.ObjectId;
@@ -11,13 +19,22 @@ export interface IEvent extends Document {
   end_time: Date;
   capacity: number;
   attendee_list: mongoose.Types.ObjectId[];
+  waitlist: IWaitlistUser[];
   qr_secret: string;
   is_public: boolean;
   created_at: Date;
 }
 
+const WaitlistSchema = new Schema<IWaitlistUser>({
+  user_id: { type: Schema.Types.ObjectId, ref: 'User' },
+  name: { type: String, required: true },
+  email: { type: String, required: true },
+  created_at: { type: Date, default: Date.now },
+});
+
 const EventSchema = new Schema<IEvent>({
   title: { type: String, required: true },
+  slug: { type: String, required: true, index: true },
   description: { type: String },
   organizer_id: { type: Schema.Types.ObjectId, ref: 'User', required: true },
   org_id: { type: Schema.Types.ObjectId, ref: 'Organization', required: true },
@@ -27,6 +44,7 @@ const EventSchema = new Schema<IEvent>({
   end_time: { type: Date, required: true },
   capacity: { type: Number, required: true, default: 100 },
   attendee_list: [{ type: Schema.Types.ObjectId, ref: 'User' }],
+  waitlist: [WaitlistSchema],
   qr_secret: { type: String, required: true },
   is_public: { type: Boolean, default: true },
   created_at: { type: Date, default: Date.now },
