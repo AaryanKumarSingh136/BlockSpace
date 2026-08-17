@@ -4,6 +4,7 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 import bcrypt from 'bcryptjs';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
+import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
 
 interface ExtendedUser extends NextAuthUser {
   id?: string;
@@ -34,11 +35,18 @@ const handler = NextAuth({
         email: { label: 'Email', type: 'email' },
         password: { label: 'Password', type: 'password' },
       },
-      async authorize(credentials) {
+      async authorize(credentials, req) {
+        const ip = getClientIp(req as Request);
+        const rateCheck = checkRateLimit(`auth_signin_${ip}`, 10, 15 * 60 * 1000);
+
+        if (!rateCheck.success) {
+          throw new Error(`Too many login attempts. Try again in ${rateCheck.reset} seconds.`);
+        }
+
         if (!credentials?.email || !credentials?.password) return null;
 
         await connectDB();
-        const user = await User.findOne({ email: credentials.email });
+        const user = await User.findOne({ email: credentials.email.toLowerCase() });
         if (!user) return null;
 
         const isValid = await bcrypt.compare(credentials.password, user.passwordHash);

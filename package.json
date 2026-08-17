@@ -7,6 +7,7 @@
     "next-dev": "next dev",
     "build": "next build",
     "start": "node server.js",
+    "seed-admin": "node scripts/seed-admin.js",
     "lint": "eslint"
   },
   "dependencies": {
