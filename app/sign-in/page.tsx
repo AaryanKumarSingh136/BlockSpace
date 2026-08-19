@@ -36,51 +36,62 @@ export default function SignInPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-950">
-      <Card className="w-full max-w-md bg-gray-900 border-gray-800 text-white">
-        <CardHeader className="text-center">
+    <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-gray-950 via-gray-900 to-gray-950 p-4">
+      <Card className="w-full max-w-md bg-gray-900/80 backdrop-blur border-gray-800 text-white shadow-2xl">
+        <CardHeader className="text-center pb-6">
+          <div className="mb-4 flex justify-center">
+            <div className="text-3xl font-black bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+              Blockspace
+            </div>
+          </div>
           <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
-          <CardDescription className="text-gray-400">
-            Sign in to your Blockspace account
+          <CardDescription className="text-gray-400 text-sm">
+            Enter your credentials to access your workspace
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-5">
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
+              <Label htmlFor="email" className="text-gray-300 font-medium">Email Address</Label>
               <Input
                 id="email"
                 type="email"
-                placeholder="aaryan@vit.ac.in"
+                placeholder="you@example.com"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500/30"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
+              <Label htmlFor="password" className="text-gray-300 font-medium">Password</Label>
               <Input
                 id="password"
                 type="password"
                 placeholder="••••••••"
                 value={form.password}
                 onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-gray-800/50 border-gray-700 text-white placeholder-gray-500 focus:border-indigo-500 focus:ring-indigo-500/30"
                 required
               />
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
+            {error && (
+              <div className="p-3 bg-red-500/10 border border-red-500/30 rounded-lg">
+                <p className="text-red-400 text-sm font-medium">{error}</p>
+              </div>
+            )}
+            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold py-2.5 transition duration-200" disabled={loading}>
               {loading ? 'Signing in...' : 'Sign In'}
             </Button>
           </form>
-          <p className="text-center text-gray-400 text-sm mt-4">
-            Don&apos;t have an account?{' '}
-            <Link href="/sign-up" className="text-indigo-400 hover:underline">
-              Sign up
-            </Link>
-          </p>
+          <div className="mt-6 pt-6 border-t border-gray-800">
+            <p className="text-center text-gray-400 text-sm">
+              New to Blockspace?{' '}
+              <Link href="/sign-up" className="text-indigo-400 font-semibold hover:text-indigo-300 transition">
+                Create an account
+              </Link>
+            </p>
+          </div>
         </CardContent>
       </Card>
     </main>
