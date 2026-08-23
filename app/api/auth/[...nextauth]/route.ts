@@ -46,10 +46,19 @@ const handler = NextAuth({
         if (!credentials?.email || !credentials?.password) return null;
 
         await connectDB();
-        const user = await User.findOne({ email: credentials.email.toLowerCase() });
-        if (!user) return null;
 
-        const isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+        const email = credentials.email.toLowerCase().trim();
+        const user = await User.findOne({ email });
+        if (!user || !user.passwordHash) return null;
+
+        let isValid = false;
+        try {
+          isValid = await bcrypt.compare(credentials.password, user.passwordHash);
+        } catch (err) {
+          console.warn(`Bcrypt compare failed for ${email}:`, err);
+          isValid = false;
+        }
+
         if (!isValid) return null;
 
         return {

@@ -44,12 +44,24 @@ export function checkRateLimit(
   };
 }
 
-export function getClientIp(req: Request): string {
-  const forwardedFor = req.headers.get('x-forwarded-for');
+type RequestHeaders = Headers | Record<string, string | string[] | undefined>;
+
+export function getClientIp(req: { headers: RequestHeaders }): string {
+  const headers = req.headers;
+  const getHeader = (name: string): string | undefined => {
+    if (typeof (headers as Headers).get === 'function') {
+      return (headers as Headers).get(name) ?? undefined;
+    }
+
+    const value = (headers as Record<string, string | string[] | undefined>)[name];
+    return Array.isArray(value) ? value[0] : value;
+  };
+
+  const forwardedFor = getHeader('x-forwarded-for');
   if (forwardedFor) {
     return forwardedFor.split(',')[0].trim();
   }
-  const realIp = req.headers.get('x-real-ip');
+  const realIp = getHeader('x-real-ip');
   if (realIp) {
     return realIp;
   }

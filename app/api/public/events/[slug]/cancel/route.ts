@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import bcrypt from 'bcryptjs';
 import connectDB from '@/lib/mongodb';
 import Event from '@/models/Event';
 import Ticket from '@/models/Ticket';
@@ -70,10 +71,11 @@ export async function POST(
         let pUser = await User.findOne({ email: nextPerson.email.toLowerCase() });
         if (!pUser) {
           const dummyPassword = crypto.randomBytes(16).toString('hex');
+          const passwordHash = await bcrypt.hash(dummyPassword, 10);
           pUser = await User.create({
             name: nextPerson.name,
             email: nextPerson.email.toLowerCase(),
-            passwordHash: dummyPassword,
+            passwordHash,
             role: 'member',
             org_id: event.org_id,
           });

@@ -25,19 +25,41 @@ export async function POST(req: Request) {
 
     await connectDB();
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
-      return NextResponse.json({ message: 'User already exists' }, { status: 400 });
-    }
+      const emailNormalized = email.toLowerCase().trim();
+      const existingUser = await User.findOne({ email: emailNormalized });
 
-    const passwordHash = await bcrypt.hash(password, 12);
+      const passwordHash = await bcrypt.hash(password, 12);
 
-    const user = await User.create({
-      name,
-      email: email.toLowerCase(),
-      passwordHash,
-      role: 'member',
-    });
+      if (existingUser) {
+        // If account was auto-created during event registration/waitlist with dummy unhashed password
+        const isDummy = !existingUser.passwordHash || !existingUser.passwordHash.startsWith('$2');
+        if (isDummy) {
+          existingUser.passwordHash = passwordHash;
+          if (name?.trim()) existingUser.name = name.trim();
+          await existingUser.save();
+
+          sendWelcomeEmail(existingUser.email, existingUser.name).catch((err) =>
+            console.warn('Welcome email error:', err)
+          );
+
+          return NextResponse.json(
+            { message: 'Account registered & password created successfully! You can now sign in.', userId: existingUser._id },
+            { status: 200 }
+          );
+        }
+
+        return NextResponse.json(
+          { message: 'An account with this email already exists. Please sign in or reset your password.' },
+          { status: 400 }
+        );
+      }
+
+      const user = await User.create({
+        name: name.trim(),
+        email: emailNormalized,
+        passwordHash,
+        role: 'member',
+      });
 
     // Send Welcome Email asynchronously
     sendWelcomeEmail(user.email, user.name).catch((err) =>
