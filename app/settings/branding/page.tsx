@@ -136,7 +136,7 @@ export default function BrandingSettingsPage() {
               Custom Org Branding
             </h1>
             <p className="text-gray-400 text-sm mt-1">
-              Customize your organization's public landing pages, accent color, and brand logo.
+              Customize your organization&apos;s public landing pages, accent color, and brand logo.
             </p>
           </div>
 

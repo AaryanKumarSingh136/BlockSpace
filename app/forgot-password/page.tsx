@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
       }
 
       setMessage(data.message || 'Password updated successfully! You can now sign in.');
-    } catch (err: any) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setLoading(false);
@@ -47,15 +47,15 @@ export default function ForgotPasswordPage() {
   return (
     <main className="relative min-h-screen flex items-center justify-center bg-[#07090e] text-white p-4 sm:p-6 overflow-hidden">
       {/* Background Orbs */}
-      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-600/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="pointer-events-none absolute left-1/2 top-1/3 h-125 w-125 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/10 blur-[140px]" />
 
       <div className="w-full max-w-md z-10 animate-in fade-in zoom-in-95 duration-500">
         {/* Header Logo */}
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex items-center gap-3 group mb-4">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-indigo-600 via-purple-600 to-cyan-400 p-[1.5px] shadow-xl shadow-indigo-500/25 group-hover:scale-105 transition-transform duration-300">
-              <div className="w-full h-full bg-[#07090e] rounded-[14px] flex items-center justify-center">
-                <span className="cyber-gradient-text text-2xl font-black tracking-wider">B</span>
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary p-px shadow-xl shadow-primary/20 transition-transform duration-300 group-hover:scale-105">
+              <div className="flex h-full w-full items-center justify-center rounded-[14px] bg-background">
+                <span className="text-2xl font-black tracking-wider text-primary">B</span>
               </div>
             </div>
           </Link>
@@ -69,7 +69,7 @@ export default function ForgotPasswordPage() {
 
         {/* Card Form */}
         <div className="glass-panel rounded-3xl p-6 sm:p-8 shadow-2xl border border-white/10 relative overflow-hidden">
-          <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent opacity-80" />
+          <div className="absolute inset-x-0 top-0 h-0.5 bg-primary opacity-80" />
 
           {message ? (
             <div className="space-y-6 text-center animate-in fade-in duration-300">

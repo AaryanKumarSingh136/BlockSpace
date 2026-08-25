@@ -18,7 +18,7 @@ export default function NotFound() {
         </h1>
 
         <p className="text-gray-400 text-sm mb-8">
-          The page or resource you are looking for does not exist, was moved, or you don't have permission to access it.
+          The page or resource you are looking for does not exist, was moved, or you don&apos;t have permission to access it.
         </p>
 
         <div className="space-y-3">

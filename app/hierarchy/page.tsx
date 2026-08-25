@@ -281,7 +281,7 @@ export default function HierarchyPage() {
                       </CardTitle>
                       {req.details?.description && (
                         <CardDescription className="text-gray-400 text-xs mt-1">
-                          "{req.details.description}"
+                          &quot;{req.details.description}&quot;
                         </CardDescription>
                       )}
                     </CardHeader>
@@ -318,7 +318,7 @@ export default function HierarchyPage() {
 
           {clubs.length === 0 ? (
             <Card className="bg-gray-900 border-gray-800 text-gray-400 p-8 text-center">
-              No clubs created yet. Click "+ Create / Request Club" above to start building your structure!
+              No clubs created yet. Click &quot;+ Create / Request Club&quot; above to start building your structure!
             </Card>
           ) : (
             <div className="space-y-6">
