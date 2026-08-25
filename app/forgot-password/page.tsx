@@ -1,13 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { KeyRound, Mail, ArrowRight, ArrowLeft, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 
-export default function ForgotPasswordPage() {
+function ForgotPasswordForm() {
+  const searchParams = useSearchParams();
+  const resetToken = searchParams.get('token') || '';
   const [email, setEmail] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -22,10 +25,12 @@ export default function ForgotPasswordPage() {
     setMessage('');
 
     try {
-      const res = await fetch('/api/auth/reset-password', {
+      const endpoint = resetToken ? '/api/auth/reset-password' : '/api/auth/request-reset';
+      const body = resetToken ? { token: resetToken, newPassword } : { email: email.trim() };
+      const res = await fetch(endpoint, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: email.trim(), newPassword }),
+        body: JSON.stringify(body),
       });
 
       const data = await res.json();
@@ -63,7 +68,7 @@ export default function ForgotPasswordPage() {
             Reset Password
           </h1>
           <p className="text-sm text-gray-400 mt-2">
-            Enter your account email and choose a new password
+            {resetToken ? 'Choose a new password for your account' : 'Enter your email to receive a secure reset link'}
           </p>
         </div>
 
@@ -90,7 +95,7 @@ export default function ForgotPasswordPage() {
             </div>
           ) : (
             <form onSubmit={handleSubmit} className="space-y-5">
-              <div className="space-y-2">
+              {!resetToken && <div className="space-y-2">
                 <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wider text-gray-300">
                   Account Email
                 </Label>
@@ -106,9 +111,9 @@ export default function ForgotPasswordPage() {
                     required
                   />
                 </div>
-              </div>
+              </div>}
 
-              <div className="space-y-2">
+              {resetToken && <div className="space-y-2">
                 <Label htmlFor="newPassword" className="text-xs font-semibold uppercase tracking-wider text-gray-300">
                   New Password
                 </Label>
@@ -132,7 +137,7 @@ export default function ForgotPasswordPage() {
                     {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                   </button>
                 </div>
-              </div>
+              </div>}
 
               {error && (
                 <div className="p-3.5 bg-red-500/10 border border-red-500/30 rounded-xl animate-in fade-in duration-200">
@@ -148,11 +153,11 @@ export default function ForgotPasswordPage() {
                 {loading ? (
                   <span className="flex items-center gap-2">
                     <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                    Resetting Password...
+                    {resetToken ? 'Resetting Password...' : 'Sending Reset Link...'}
                   </span>
                 ) : (
                   <>
-                    <span>Reset Password</span>
+                    <span>{resetToken ? 'Reset Password' : 'Send Reset Link'}</span>
                     <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                   </>
                 )}
@@ -170,5 +175,13 @@ export default function ForgotPasswordPage() {
         </div>
       </div>
     </main>
+  );
+}
+
+export default function ForgotPasswordPage() {
+  return (
+    <Suspense fallback={<main className="min-h-screen bg-background" />}>
+      <ForgotPasswordForm />
+    </Suspense>
   );
 }

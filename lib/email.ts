@@ -43,6 +43,17 @@ export async function sendWelcomeEmail(to: string, name: string) {
   return dispatchEmail({ to, subject: 'Welcome to Blockspace!', html });
 }
 
+export async function sendPasswordResetEmail(to: string, resetLink: string) {
+  const html = `
+    <div style="font-family: sans-serif; padding: 32px;">
+      <h2>Reset your Blockspace password</h2>
+      <p>This link expires in 15 minutes and can only be used once.</p>
+      <a href="${resetLink}">Reset password</a>
+    </div>
+  `;
+  return dispatchEmail({ to, subject: 'Reset your Blockspace password', html });
+}
+
 export async function sendBookingCreatedEmail(to: string, bookingTitle: string, resourceName: string, startTime: string) {
   const html = `
     <div style="font-family: sans-serif; background-color: #090d16; color: #ffffff; padding: 32px; borderRadius: 12px;">

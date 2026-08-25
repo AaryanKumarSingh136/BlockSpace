@@ -16,7 +16,6 @@ export async function POST(
 ) {
   try {
     const { slug } = await params;
-    const body = await req.json().catch(() => ({}));
     const session = await getServerSession();
 
     await connectDB();
@@ -31,10 +30,10 @@ export async function POST(
       return NextResponse.json({ message: 'Event not found' }, { status: 404 });
     }
 
-    let email = body.email?.trim()?.toLowerCase();
-    if (session?.user?.email) {
-      email = session.user.email.toLowerCase();
+    if (!session?.user?.email) {
+      return NextResponse.json({ message: 'Sign in is required to cancel registration' }, { status: 401 });
     }
+    const email = session.user.email.toLowerCase();
 
     if (!email) {
       return NextResponse.json({ message: 'Email required to cancel registration' }, { status: 400 });

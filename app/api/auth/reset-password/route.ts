@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
+import crypto from 'crypto';
 import connectDB from '@/lib/mongodb';
 import User from '@/models/User';
 import { checkRateLimit, getClientIp } from '@/lib/rateLimit';
@@ -16,10 +17,10 @@ export async function POST(req: Request) {
       );
     }
 
-    const { email, newPassword } = await req.json();
+    const { token, newPassword } = await req.json();
 
-    if (!email || !newPassword) {
-      return NextResponse.json({ message: 'Email and new password are required' }, { status: 400 });
+    if (!token || !newPassword || typeof token !== 'string') {
+      return NextResponse.json({ message: 'Reset token and new password are required' }, { status: 400 });
     }
 
     if (newPassword.length < 6) {
@@ -28,19 +29,20 @@ export async function POST(req: Request) {
 
     await connectDB();
 
-    const emailNormalized = email.toLowerCase().trim();
-    const user = await User.findOne({ email: emailNormalized });
+    const tokenHash = crypto.createHash('sha256').update(token).digest('hex');
+    const user = await User.findOne({
+      passwordResetTokenHash: tokenHash,
+      passwordResetExpiresAt: { $gt: new Date() },
+    }).select('+passwordResetTokenHash +passwordResetExpiresAt');
 
     if (!user) {
-      // Return 200 for security so attackers cannot enumerate valid user emails
-      return NextResponse.json(
-        { message: 'If an account with that email exists, the password has been updated. You can now sign in.' },
-        { status: 200 }
-      );
+      return NextResponse.json({ message: 'Invalid or expired reset token' }, { status: 400 });
     }
 
     const passwordHash = await bcrypt.hash(newPassword, 12);
     user.passwordHash = passwordHash;
+    user.passwordResetTokenHash = undefined;
+    user.passwordResetExpiresAt = undefined;
     await user.save();
 
     return NextResponse.json(

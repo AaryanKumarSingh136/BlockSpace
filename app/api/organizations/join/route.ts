@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
     await connectDB();
 
-    const invite = await Invite.findOne({ token });
+    const invite = await Invite.findOne({ token }).lean();
     if (!invite) {
       return NextResponse.json({ message: 'Invalid invite token' }, { status: 404 });
     }
@@ -31,12 +31,28 @@ export async function POST(req: Request) {
       return NextResponse.json({ message: 'Invite expired' }, { status: 400 });
     }
 
-    await User.findOneAndUpdate(
-      { email: session.user.email },
+    if (invite.email.toLowerCase() !== session.user.email.toLowerCase()) {
+      return NextResponse.json({ message: 'This invite was issued for a different email address' }, { status: 403 });
+    }
+
+    const claimedInvite = await Invite.findOneAndUpdate(
+      { _id: invite._id, used: false, expires_at: { $gt: new Date() } },
+      { used: true },
+      { new: true }
+    );
+    if (!claimedInvite) {
+      return NextResponse.json({ message: 'Invite is no longer available' }, { status: 409 });
+    }
+
+    const updatedUser = await User.findOneAndUpdate(
+      { email: session.user.email, $or: [{ org_id: { $exists: false } }, { org_id: null }] },
       { org_id: invite.org_id, role: invite.role }
     );
 
-    await Invite.findByIdAndUpdate(invite._id, { used: true });
+    if (!updatedUser) {
+      await Invite.findByIdAndUpdate(invite._id, { used: false });
+      return NextResponse.json({ message: 'You already belong to an organization' }, { status: 409 });
+    }
 
     return NextResponse.json({ message: 'Joined organization successfully' });
   } catch (error) {

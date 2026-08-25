@@ -9,6 +9,7 @@ import {
   Network,
   ShieldCheck,
 } from 'lucide-react';
+import ThemeToggle from '@/components/ThemeToggle';
 
 const capabilities = [
   {
@@ -45,6 +46,7 @@ export default function Home() {
           <a href="#security" className="site-nav__link">Security</a>
         </div>
         <div className="hidden items-center gap-3 sm:flex">
+          <ThemeToggle />
           <Link href="/sign-in" className="site-nav__login">Sign in</Link>
           <Link href="/sign-up" className="site-nav__cta">Start free <ArrowUpRight size={15} /></Link>
         </div>

@@ -9,6 +9,8 @@ export interface IUser extends Document {
   club_id?: mongoose.Types.ObjectId;
   dept_id?: mongoose.Types.ObjectId;
   joined_at: Date;
+  passwordResetTokenHash?: string;
+  passwordResetExpiresAt?: Date;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -24,6 +26,8 @@ const UserSchema = new Schema<IUser>({
   club_id: { type: Schema.Types.ObjectId, ref: 'Club' },
   dept_id: { type: Schema.Types.ObjectId, ref: 'Department' },
   joined_at: { type: Date, default: Date.now },
+  passwordResetTokenHash: { type: String, select: false },
+  passwordResetExpiresAt: { type: Date, select: false },
 });
 
 export default mongoose.models.User || mongoose.model<IUser>('User', UserSchema);
