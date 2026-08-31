@@ -72,19 +72,19 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-950 text-white">
-        <p className="text-gray-400">Loading event details...</p>
+      <main className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <p className="text-muted-foreground">Loading event details...</p>
       </main>
     );
   }
 
   if (!event) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-950 text-white p-4">
-        <Card className="bg-gray-900 border-gray-800 text-white p-6 max-w-md w-full text-center">
-          <p className="text-red-400 mb-4">Event not found.</p>
+      <main className="flex min-h-screen items-center justify-center bg-background text-foreground p-4">
+        <Card className="bg-card border-border text-card-foreground p-6 max-w-md w-full text-center">
+          <p className="text-destructive mb-4">Event not found.</p>
           <Link href="/events">
-            <Button className="bg-indigo-600 hover:bg-indigo-700">Back to Events</Button>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Back to Events</Button>
           </Link>
         </Card>
       </main>
@@ -95,10 +95,10 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
   const isFull = registeredCount >= event.capacity;
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950 text-white p-4 md:p-8">
+    <main className="flex min-h-screen flex-col bg-background text-foreground p-4 md:p-8">
       <div className="max-w-3xl mx-auto w-full space-y-6">
 
-        <Link href="/events" className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+        <Link href="/events" className="text-xs text-primary hover:underline flex items-center gap-1 font-semibold">
           ← Back to Events
         </Link>
 
@@ -107,75 +107,75 @@ export default function EventDetailPage({ params }: { params: Promise<{ id: stri
           <div
             className={`p-4 rounded-lg border text-sm font-medium flex items-center justify-between ${
               message.type === 'success'
-                ? 'bg-green-950/70 border-green-800 text-green-300'
-                : 'bg-red-950/70 border-red-800 text-red-300'
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                : 'bg-destructive/10 border-destructive/30 text-destructive'
             }`}
           >
             <span>{message.text}</span>
-            <button onClick={() => setMessage(null)} className="text-gray-400 hover:text-white">
+            <button onClick={() => setMessage(null)} className="text-muted-foreground hover:text-foreground">
               ✕
             </button>
           </div>
         )}
 
-        <Card className="bg-gray-900 border-gray-800 text-white">
-          <CardHeader className="space-y-3 border-b border-gray-800 pb-6">
+        <Card className="bg-card border-border text-card-foreground">
+          <CardHeader className="space-y-3 border-b border-border pb-6">
             <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950 px-2.5 py-1 rounded border border-indigo-800">
+              <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-1 rounded border border-primary/20">
                 {event.club_id?.name || 'Organization Event'}
               </span>
-              <span className={`text-xs px-2.5 py-1 rounded font-semibold ${isFull ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-green-950 text-green-400 border border-green-800'}`}>
+              <span className={`text-xs px-2.5 py-1 rounded font-semibold ${isFull ? 'bg-destructive/10 text-destructive border border-destructive/20' : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'}`}>
                 {registeredCount} / {event.capacity} Registered
               </span>
             </div>
 
-            <CardTitle className="text-3xl font-bold">{event.title}</CardTitle>
+            <CardTitle className="text-3xl font-bold text-card-foreground">{event.title}</CardTitle>
             {event.description && (
-              <CardDescription className="text-gray-300 text-sm leading-relaxed">
+              <CardDescription className="text-muted-foreground text-sm leading-relaxed">
                 {event.description}
               </CardDescription>
             )}
           </CardHeader>
 
           <CardContent className="p-6 space-y-6">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-gray-950/80 p-4 rounded-lg border border-gray-800 text-sm">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-muted/60 p-4 rounded-lg border border-border text-sm">
               <div>
-                <span className="text-gray-400 text-xs block">Start Time</span>
-                <span className="font-semibold">{new Date(event.start_time).toLocaleString()}</span>
+                <span className="text-muted-foreground text-xs block">Start Time</span>
+                <span className="font-semibold text-foreground">{new Date(event.start_time).toLocaleString()}</span>
               </div>
               <div>
-                <span className="text-gray-400 text-xs block">End Time</span>
-                <span className="font-semibold">{new Date(event.end_time).toLocaleString()}</span>
+                <span className="text-muted-foreground text-xs block">End Time</span>
+                <span className="font-semibold text-foreground">{new Date(event.end_time).toLocaleString()}</span>
               </div>
               <div>
-                <span className="text-gray-400 text-xs block">Organizer</span>
-                <span className="font-semibold">{event.organizer_id?.name || 'Org Admin'}</span>
+                <span className="text-muted-foreground text-xs block">Organizer</span>
+                <span className="font-semibold text-foreground">{event.organizer_id?.name || 'Org Admin'}</span>
               </div>
               <div>
-                <span className="text-gray-400 text-xs block">Entry Type</span>
-                <span className="font-semibold text-emerald-400">JWT QR Code Ticket</span>
+                <span className="text-muted-foreground text-xs block">Entry Type</span>
+                <span className="font-semibold text-emerald-600 dark:text-emerald-400">JWT QR Code Ticket</span>
               </div>
             </div>
 
             {/* Registration Actions */}
             <div className="pt-2">
               {isRegistered ? (
-                <div className="space-y-3 bg-indigo-950/40 border border-indigo-800/80 p-5 rounded-xl text-center">
-                  <p className="text-emerald-400 font-bold text-sm">✅ You are registered for this event!</p>
+                <div className="space-y-3 bg-primary/10 border border-primary/30 p-5 rounded-xl text-center">
+                  <p className="text-emerald-600 dark:text-emerald-400 font-bold text-sm">✅ You are registered for this event!</p>
                   <Link href={`/events/${event._id}/ticket`}>
-                    <Button className="w-full bg-indigo-600 hover:bg-indigo-700 font-semibold mt-2">
+                    <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-semibold mt-2">
                       🎟️ View / Present Your QR Ticket
                     </Button>
                   </Link>
                 </div>
               ) : isFull ? (
-                <Button disabled className="w-full bg-gray-800 text-gray-500 font-semibold cursor-not-allowed">
+                <Button disabled className="w-full bg-muted text-muted-foreground font-semibold cursor-not-allowed">
                   Event Full (Capacity Reached)
                 </Button>
               ) : (
                 <Button
                   onClick={handleRegister}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 font-bold py-6 text-base shadow-lg shadow-indigo-950"
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 font-bold py-6 text-base shadow-lg"
                   disabled={registerLoading}
                 >
                   {registerLoading ? 'Registering...' : 'Register Now & Claim QR Ticket'}

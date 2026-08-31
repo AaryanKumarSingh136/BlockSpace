@@ -70,21 +70,21 @@ export default function BookingsPage() {
   };
 
   const statusColor = (status: string) => {
-    if (status === 'approved') return 'text-green-400';
-    if (status === 'pending') return 'text-yellow-400';
-    if (status === 'rejected') return 'text-red-400';
-    return 'text-gray-400';
+    if (status === 'approved') return 'text-emerald-600 dark:text-emerald-400';
+    if (status === 'pending') return 'text-amber-600 dark:text-amber-400';
+    if (status === 'rejected') return 'text-destructive';
+    return 'text-muted-foreground';
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950 text-white p-8">
+    <main className="flex min-h-screen flex-col bg-background text-foreground p-8">
       <div className="max-w-4xl mx-auto w-full">
-        <h1 className="text-3xl font-bold mb-8">Bookings</h1>
+        <h1 className="text-3xl font-bold mb-8 text-foreground">Bookings</h1>
 
         {/* Create Booking Form */}
-        <Card className="bg-gray-900 border-gray-800 text-white mb-8">
+        <Card className="bg-card border-border text-card-foreground mb-8">
           <CardHeader>
-            <CardTitle>New Booking</CardTitle>
+            <CardTitle className="text-card-foreground">New Booking</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleSubmit} className="space-y-4">
@@ -94,7 +94,7 @@ export default function BookingsPage() {
                   placeholder="Team Meeting"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-muted border-border text-foreground"
                   required
                 />
               </div>
@@ -103,12 +103,12 @@ export default function BookingsPage() {
                 <select
                   value={form.resource_id}
                   onChange={(e) => setForm({ ...form, resource_id: e.target.value })}
-                  className="w-full bg-gray-800 border border-gray-700 text-white rounded-md px-3 py-2"
+                  className="w-full bg-muted border border-border text-foreground rounded-md px-3 py-2"
                   required
                 >
-                  <option value="">Select a resource</option>
+                  <option value="" className="bg-card text-card-foreground">Select a resource</option>
                   {resources.map((r) => (
-                    <option key={r._id} value={r._id}>{r.name} ({r.type})</option>
+                    <option key={r._id} value={r._id} className="bg-card text-card-foreground">{r.name} ({r.type})</option>
                   ))}
                 </select>
               </div>
@@ -119,7 +119,7 @@ export default function BookingsPage() {
                     type="datetime-local"
                     value={form.start_time}
                     onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-muted border-border text-foreground"
                     required
                   />
                 </div>
@@ -129,14 +129,14 @@ export default function BookingsPage() {
                     type="datetime-local"
                     value={form.end_time}
                     onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white"
+                    className="bg-muted border-border text-foreground"
                     required
                   />
                 </div>
               </div>
-              {error && <p className="text-red-400 text-sm">{error}</p>}
-              {success && <p className="text-green-400 text-sm">{success}</p>}
-              <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
+              {error && <p className="text-destructive text-sm">{error}</p>}
+              {success && <p className="text-emerald-600 dark:text-emerald-400 text-sm">{success}</p>}
+              <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
                 {loading ? 'Booking...' : 'Create Booking'}
               </Button>
             </form>
@@ -146,19 +146,19 @@ export default function BookingsPage() {
         {/* Bookings List */}
         <div className="space-y-4">
           {bookings.length === 0 ? (
-            <p className="text-gray-400">No bookings yet.</p>
+            <p className="text-muted-foreground">No bookings yet.</p>
           ) : (
             bookings.map((b) => (
-              <div key={b._id} className="bg-gray-900 border border-gray-800 rounded-lg p-5">
+              <div key={b._id} className="bg-card border border-border rounded-lg p-5">
                 <div className="flex items-center justify-between mb-2">
-                  <h2 className="text-lg font-semibold">{b.title}</h2>
+                  <h2 className="text-lg font-semibold text-card-foreground">{b.title}</h2>
                   <span className={`text-sm capitalize font-medium ${statusColor(b.status)}`}>
                     {b.status}
                   </span>
                 </div>
-                <p className="text-gray-400 text-sm">Resource: {b.resource_id?.name} ({b.resource_id?.type})</p>
-                <p className="text-gray-400 text-sm">By: {b.user_id?.name}</p>
-                <p className="text-gray-400 text-sm">
+                <p className="text-muted-foreground text-sm">Resource: {b.resource_id?.name} ({b.resource_id?.type})</p>
+                <p className="text-muted-foreground text-sm">By: {b.user_id?.name}</p>
+                <p className="text-muted-foreground text-sm">
                   {new Date(b.start_time).toLocaleString()} → {new Date(b.end_time).toLocaleString()}
                 </p>
               </div>

@@ -43,13 +43,13 @@ function JoinForm() {
   return (
     <CardContent className="text-center space-y-4">
       {success ? (
-        <p className="text-green-400">Successfully joined! Redirecting to dashboard...</p>
+        <p className="text-emerald-600 dark:text-emerald-400 font-medium">Successfully joined! Redirecting to dashboard...</p>
       ) : (
         <>
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          {error && <p className="text-destructive text-sm font-medium">{error}</p>}
           <Button
             onClick={handleJoin}
-            className="w-full bg-indigo-600 hover:bg-indigo-700"
+            className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
             disabled={loading}
           >
             {loading ? 'Joining...' : 'Accept Invite'}
@@ -62,15 +62,15 @@ function JoinForm() {
 
 export default function JoinPage() {
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-950">
-      <Card className="w-full max-w-md bg-gray-900 border-gray-800 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-background text-foreground p-4">
+      <Card className="w-full max-w-md bg-card border-border text-card-foreground shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Join Organization</CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardTitle className="text-2xl font-bold text-card-foreground">Join Organization</CardTitle>
+          <CardDescription className="text-muted-foreground">
             You have been invited to join an organization on Blockspace
           </CardDescription>
         </CardHeader>
-        <Suspense fallback={<CardContent className="text-center text-gray-400">Loading invite...</CardContent>}>
+        <Suspense fallback={<CardContent className="text-center text-muted-foreground">Loading invite...</CardContent>}>
           <JoinForm />
         </Suspense>
       </Card>

@@ -79,14 +79,14 @@ export default function EventsPage() {
   const isManagerOrAdmin = ['manager', 'orgAdmin', 'superAdmin'].includes(session?.user?.role || '');
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950 text-white p-4 md:p-8">
+    <main className="flex min-h-screen flex-col bg-background text-foreground p-4 md:p-8">
       <div className="max-w-6xl mx-auto w-full space-y-8">
         
         {/* Page Header */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Events & QR Ticketing</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Events & QR Ticketing</h1>
+            <p className="text-muted-foreground text-sm mt-1">
               Browse events, register for QR tickets, and validate door access
             </p>
           </div>
@@ -94,7 +94,7 @@ export default function EventsPage() {
           {isManagerOrAdmin && (
             <Button
               onClick={() => setShowModal(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 font-semibold"
+              className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold"
             >
               + Create New Event
             </Button>
@@ -106,12 +106,12 @@ export default function EventsPage() {
           <div
             className={`p-4 rounded-lg border text-sm font-medium flex items-center justify-between ${
               message.type === 'success'
-                ? 'bg-green-950/70 border-green-800 text-green-300'
-                : 'bg-red-950/70 border-red-800 text-red-300'
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                : 'bg-destructive/10 border-destructive/30 text-destructive'
             }`}
           >
             <span>{message.text}</span>
-            <button onClick={() => setMessage(null)} className="text-gray-400 hover:text-white">
+            <button onClick={() => setMessage(null)} className="text-muted-foreground hover:text-foreground">
               ✕
             </button>
           </div>
@@ -119,9 +119,9 @@ export default function EventsPage() {
 
         {/* Events Grid */}
         {loading ? (
-          <div className="text-center text-gray-400 py-12">Loading events...</div>
+          <div className="text-center text-muted-foreground py-12">Loading events...</div>
         ) : events.length === 0 ? (
-          <Card className="bg-gray-900 border-gray-800 text-gray-400 p-8 text-center">
+          <Card className="bg-card border-border text-muted-foreground p-8 text-center">
             No upcoming events yet. {isManagerOrAdmin ? 'Click "+ Create New Event" above to create one!' : ''}
           </Card>
         ) : (
@@ -131,27 +131,27 @@ export default function EventsPage() {
               const isFull = registeredCount >= evt.capacity;
 
               return (
-                <Card key={evt._id} className="bg-gray-900 border-gray-800 text-white flex flex-col justify-between hover:border-gray-700 transition">
+                <Card key={evt._id} className="bg-card border-border text-card-foreground flex flex-col justify-between hover:border-ring transition">
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs font-bold uppercase tracking-wider text-indigo-400 bg-indigo-950 px-2.5 py-0.5 rounded border border-indigo-800">
+                      <span className="text-xs font-bold uppercase tracking-wider text-primary bg-primary/10 px-2.5 py-0.5 rounded border border-primary/20">
                         {evt.club_id?.name || 'Org Event'}
                       </span>
-                      <span className={`text-xs px-2 py-0.5 rounded font-semibold ${isFull ? 'bg-red-950 text-red-400 border border-red-800' : 'bg-green-950 text-green-400 border border-green-800'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded font-semibold ${isFull ? 'bg-destructive/10 text-destructive border border-destructive/20' : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/20'}`}>
                         {registeredCount} / {evt.capacity} Seats
                       </span>
                     </div>
 
-                    <CardTitle className="text-xl font-bold">{evt.title}</CardTitle>
+                    <CardTitle className="text-xl font-bold text-card-foreground">{evt.title}</CardTitle>
                     {evt.description && (
-                      <CardDescription className="text-gray-400 text-xs line-clamp-2 mt-1">
+                      <CardDescription className="text-muted-foreground text-xs line-clamp-2 mt-1">
                         {evt.description}
                       </CardDescription>
                     )}
                   </CardHeader>
 
                   <CardContent className="space-y-4 pt-0">
-                    <div className="text-xs text-gray-400 space-y-1 bg-gray-950/60 p-3 rounded border border-gray-800 font-mono">
+                    <div className="text-xs text-muted-foreground space-y-1 bg-muted/60 p-3 rounded border border-border font-mono">
                       <div>
                         Start: {new Date(evt.start_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                       </div>
@@ -159,7 +159,7 @@ export default function EventsPage() {
                         End: {new Date(evt.end_time).toLocaleString([], { dateStyle: 'short', timeStyle: 'short' })}
                       </div>
                       {evt.organizer_id && (
-                        <div className="text-indigo-400 font-sans mt-1">
+                        <div className="text-primary font-sans mt-1">
                           Organizer: {evt.organizer_id.name}
                         </div>
                       )}
@@ -167,14 +167,14 @@ export default function EventsPage() {
 
                     <div className="flex flex-col gap-2">
                       <Link href={`/events/${evt._id}`}>
-                        <Button className="w-full bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold">
+                        <Button className="w-full bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold">
                           View Details & Register
                         </Button>
                       </Link>
 
                       {isManagerOrAdmin && (
                         <Link href={`/events/${evt._id}/scanner`}>
-                          <Button variant="outline" className="w-full border-gray-700 text-gray-300 hover:bg-gray-800 text-xs font-semibold">
+                          <Button variant="outline" className="w-full border-border text-foreground hover:bg-muted text-xs font-semibold">
                             📷 Door Scanner View
                           </Button>
                         </Link>
@@ -191,9 +191,9 @@ export default function EventsPage() {
 
       {/* Modal: Create Event */}
       {showModal && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
-            <h2 className="text-xl font-bold">Create Event</h2>
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-border text-card-foreground rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
+            <h2 className="text-xl font-bold text-foreground">Create Event</h2>
             <form onSubmit={handleCreateEvent} className="space-y-4">
               <div>
                 <Label>Event Title</Label>
@@ -201,7 +201,7 @@ export default function EventsPage() {
                   placeholder="e.g. Annual Tech Symposium 2026"
                   value={form.title}
                   onChange={(e) => setForm({ ...form, title: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white mt-1"
+                  className="bg-muted border-border text-foreground mt-1"
                   required
                 />
               </div>
@@ -212,7 +212,7 @@ export default function EventsPage() {
                   placeholder="Event agenda & details"
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white mt-1"
+                  className="bg-muted border-border text-foreground mt-1"
                 />
               </div>
 
@@ -223,7 +223,7 @@ export default function EventsPage() {
                     type="datetime-local"
                     value={form.start_time}
                     onChange={(e) => setForm({ ...form, start_time: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white text-xs mt-1"
+                    className="bg-muted border-border text-foreground text-xs mt-1"
                     required
                   />
                 </div>
@@ -234,7 +234,7 @@ export default function EventsPage() {
                     type="datetime-local"
                     value={form.end_time}
                     onChange={(e) => setForm({ ...form, end_time: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white text-xs mt-1"
+                    className="bg-muted border-border text-foreground text-xs mt-1"
                     required
                   />
                 </div>
@@ -247,7 +247,7 @@ export default function EventsPage() {
                   placeholder="100"
                   value={form.capacity}
                   onChange={(e) => setForm({ ...form, capacity: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white mt-1"
+                  className="bg-muted border-border text-foreground mt-1"
                   required
                 />
               </div>
@@ -257,11 +257,11 @@ export default function EventsPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setShowModal(false)}
-                  className="border-gray-700 text-gray-300"
+                  className="border-border text-foreground hover:bg-muted"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={formLoading}>
+                <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90" disabled={formLoading}>
                   {formLoading ? 'Creating...' : 'Create Event'}
                 </Button>
               </div>

@@ -42,43 +42,43 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-950">
-      <Card className="w-full max-w-md bg-gray-900 border-gray-800 text-white">
+    <main className="flex min-h-screen items-center justify-center bg-background text-foreground p-4">
+      <Card className="w-full max-w-md bg-card border-border text-card-foreground shadow-xl">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Create your Organization</CardTitle>
-          <CardDescription className="text-gray-400">
+          <CardTitle className="text-2xl font-bold text-card-foreground">Create your Organization</CardTitle>
+          <CardDescription className="text-muted-foreground">
             Set up your workspace on Blockspace
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Organization Name</Label>
+              <Label htmlFor="name" className="text-foreground">Organization Name</Label>
               <Input
                 id="name"
                 placeholder="VIT Chennai"
                 value={form.name}
                 onChange={handleNameChange}
-                className="bg-gray-800 border-gray-700 text-white"
+                className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
                 required
               />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="slug">Organization URL</Label>
+              <Label htmlFor="slug" className="text-foreground">Organization URL</Label>
               <div className="flex items-center gap-2">
-                <span className="text-gray-400 text-sm">blockspace.app/org/</span>
+                <span className="text-muted-foreground text-sm">blockspace.app/org/</span>
                 <Input
                   id="slug"
                   placeholder="vit-chennai"
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white"
+                  className="bg-muted border-border text-foreground placeholder:text-muted-foreground"
                   required
                 />
               </div>
             </div>
-            {error && <p className="text-red-400 text-sm">{error}</p>}
-            <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700" disabled={loading}>
+            {error && <p className="text-destructive text-sm font-medium">{error}</p>}
+            <Button type="submit" className="w-full bg-primary text-primary-foreground hover:bg-primary/90" disabled={loading}>
               {loading ? 'Creating...' : 'Create Organization'}
             </Button>
           </form>

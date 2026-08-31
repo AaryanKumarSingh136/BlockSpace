@@ -93,22 +93,22 @@ export default function ScannerPage({ params }: { params: Promise<{ id: string }
   };
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950 text-white p-4 md:p-8">
+    <main className="flex min-h-screen flex-col bg-background text-foreground p-4 md:p-8">
       <div className="max-w-2xl mx-auto w-full space-y-6">
 
         <div className="flex items-center justify-between">
-          <Link href={`/events/${id}`} className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+          <Link href={`/events/${id}`} className="text-xs text-primary hover:underline flex items-center gap-1 font-semibold">
             ← Back to Event
           </Link>
-          <span className="text-xs bg-indigo-950 text-indigo-300 border border-indigo-800 px-3 py-1 rounded-full font-bold uppercase">
+          <span className="text-xs bg-primary/10 text-primary border border-primary/30 px-3 py-1 rounded-full font-bold uppercase">
             Organizer Door Scanner
           </span>
         </div>
 
-        <Card className="bg-gray-900 border-gray-800 text-white">
+        <Card className="bg-card border-border text-card-foreground">
           <CardHeader className="text-center pb-4">
-            <CardTitle className="text-2xl font-bold">Live Ticket Scanner</CardTitle>
-            <CardDescription className="text-gray-400 text-xs">
+            <CardTitle className="text-2xl font-bold text-card-foreground">Live Ticket Scanner</CardTitle>
+            <CardDescription className="text-muted-foreground text-xs">
               Scan attendee JWT QR code pass or paste raw token string to validate entrance
             </CardDescription>
           </CardHeader>
@@ -118,28 +118,28 @@ export default function ScannerPage({ params }: { params: Promise<{ id: string }
             {/* Camera Controls */}
             <div className="flex justify-center gap-3">
               {!scannerActive ? (
-                <Button onClick={startScanner} className="bg-indigo-600 hover:bg-indigo-700 font-bold text-sm">
+                <Button onClick={startScanner} className="bg-primary text-primary-foreground hover:bg-primary/90 font-bold text-sm">
                   📷 Start Camera Scanner
                 </Button>
               ) : (
-                <Button onClick={stopScanner} variant="outline" className="border-red-700 text-red-400 hover:bg-red-950 text-sm font-bold">
+                <Button onClick={stopScanner} variant="outline" className="border-destructive/50 text-destructive hover:bg-destructive/10 text-sm font-bold">
                   Stop Camera Scanner
                 </Button>
               )}
             </div>
 
             {/* Html5Qrcode video container */}
-            <div id="qr-reader" className={`w-full overflow-hidden rounded-xl bg-gray-950 ${!scannerActive ? 'hidden' : ''}`} />
+            <div id="qr-reader" className={`w-full overflow-hidden rounded-xl bg-muted ${!scannerActive ? 'hidden' : ''}`} />
 
             {/* Validation Banner Display */}
             {validationResult && (
               <div
                 className={`p-6 rounded-xl border text-center space-y-2 shadow-2xl transition-all ${
                   validationResult.status === 'VALID'
-                    ? 'bg-emerald-950/90 border-emerald-500 text-emerald-200 shadow-emerald-950/50'
+                    ? 'bg-emerald-500/15 border-emerald-500 text-emerald-800 dark:text-emerald-200'
                     : validationResult.status === 'ALREADY_USED'
-                    ? 'bg-yellow-950/90 border-yellow-500 text-yellow-200 shadow-yellow-950/50'
-                    : 'bg-red-950/90 border-red-500 text-red-200 shadow-red-950/50'
+                    ? 'bg-amber-500/15 border-amber-500 text-amber-800 dark:text-amber-200'
+                    : 'bg-destructive/15 border-destructive text-destructive'
                 }`}
               >
                 <div className="text-4xl font-extrabold">
@@ -159,16 +159,16 @@ export default function ScannerPage({ params }: { params: Promise<{ id: string }
             )}
 
             {/* Manual Token Fallback Form */}
-            <form onSubmit={handleManualSubmit} className="space-y-3 pt-4 border-t border-gray-800">
-              <span className="text-xs font-semibold text-gray-400 block">Manual Token Input (Testing / Fallback)</span>
+            <form onSubmit={handleManualSubmit} className="space-y-3 pt-4 border-t border-border">
+              <span className="text-xs font-semibold text-muted-foreground block">Manual Token Input (Testing / Fallback)</span>
               <div className="flex gap-2">
                 <Input
                   placeholder="Paste raw JWT token here..."
                   value={manualToken}
                   onChange={(e) => setManualToken(e.target.value)}
-                  className="bg-gray-800 border-gray-700 text-white text-xs"
+                  className="bg-muted border-border text-foreground text-xs"
                 />
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700 text-xs font-semibold" disabled={loading}>
+                <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90 text-xs font-semibold" disabled={loading}>
                   {loading ? 'Checking...' : 'Validate'}
                 </Button>
               </div>

@@ -141,13 +141,13 @@ export default function PublicEventPage() {
   const isFull = eventData?.isFull;
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white pb-16">
+    <div className="min-h-screen bg-background text-foreground pb-16">
       {/* Header */}
-      <header className="border-b border-gray-800 bg-gray-900/90 backdrop-blur-md sticky top-0 z-50">
+      <header className="border-b border-border bg-card/90 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-4xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link
             href={`/org/${orgSlug}`}
-            className="flex items-center gap-2 text-sm text-gray-400 hover:text-white transition font-medium"
+            className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition font-medium"
           >
             <ArrowLeft className="w-4 h-4" />
             Back to {org?.name || 'Organization'}
@@ -164,21 +164,21 @@ export default function PublicEventPage() {
 
       <main className="max-w-4xl mx-auto px-4 pt-10">
         {loading ? (
-          <div className="text-center py-20 text-gray-400 text-sm">
+          <div className="text-center py-20 text-muted-foreground text-sm">
             Loading public event details...
           </div>
         ) : error ? (
-          <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-8 rounded-2xl text-center">
+          <div className="bg-destructive/10 border border-destructive/30 text-destructive p-8 rounded-2xl text-center">
             {error}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Main Details */}
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-gray-900/70 border border-gray-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
+              <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-sm">
                 <div className="flex items-center gap-3 mb-4">
                   {org?.logo_url ? (
-                    <img src={org.logo_url} alt={org.name} className="w-10 h-10 rounded-xl object-cover" />
+                    <img src={org.logo_url} alt={org.name} className="w-10 h-10 rounded-xl object-cover border border-border" />
                   ) : (
                     <div
                       className="w-10 h-10 rounded-xl flex items-center justify-center font-bold text-white text-xl"
@@ -188,19 +188,19 @@ export default function PublicEventPage() {
                     </div>
                   )}
                   <div>
-                    <span className="text-xs text-gray-400 font-semibold">{org?.name}</span>
-                    <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">{event.title}</h1>
+                    <span className="text-xs text-muted-foreground font-semibold">{org?.name}</span>
+                    <h1 className="text-2xl sm:text-3xl font-extrabold text-card-foreground tracking-tight">{event.title}</h1>
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 my-4 border-y border-gray-800 text-sm">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 py-4 my-4 border-y border-border text-sm">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gray-800 text-gray-400">
+                    <div className="p-2 rounded-lg bg-muted text-muted-foreground">
                       <Calendar className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">Date & Time</p>
-                      <p className="font-semibold text-gray-200">
+                      <p className="text-xs text-muted-foreground font-medium">Date & Time</p>
+                      <p className="font-semibold text-card-foreground">
                         {new Date(event.start_time).toLocaleDateString(undefined, {
                           weekday: 'short',
                           month: 'short',
@@ -208,7 +208,7 @@ export default function PublicEventPage() {
                           year: 'numeric',
                         })}
                       </p>
-                      <p className="text-xs text-gray-400">
+                      <p className="text-xs text-muted-foreground">
                         {new Date(event.start_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })} -{' '}
                         {new Date(event.end_time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </p>
@@ -216,15 +216,15 @@ export default function PublicEventPage() {
                   </div>
 
                   <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-lg bg-gray-800 text-gray-400">
+                    <div className="p-2 rounded-lg bg-muted text-muted-foreground">
                       <Users className="w-5 h-5" />
                     </div>
                     <div>
-                      <p className="text-xs text-gray-500 font-medium">Capacity</p>
-                      <p className="font-semibold text-gray-200">
+                      <p className="text-xs text-muted-foreground font-medium">Capacity</p>
+                      <p className="font-semibold text-card-foreground">
                         {eventData.attendeeCount} / {event.capacity} Registered
                       </p>
-                      <p className="text-xs text-indigo-400 font-medium">
+                      <p className="text-xs text-primary font-medium">
                         {eventData.waitlistCount > 0 ? `${eventData.waitlistCount} on waitlist` : 'Seats available'}
                       </p>
                     </div>
@@ -232,16 +232,16 @@ export default function PublicEventPage() {
                 </div>
 
                 <div className="mt-6">
-                  <h3 className="text-sm font-bold text-gray-300 uppercase tracking-wider mb-2">About Event</h3>
-                  <p className="text-gray-300 text-sm leading-relaxed whitespace-pre-line">
+                  <h3 className="text-sm font-bold text-muted-foreground uppercase tracking-wider mb-2">About Event</h3>
+                  <p className="text-card-foreground text-sm leading-relaxed whitespace-pre-line">
                     {event.description || 'No description provided for this event.'}
                   </p>
                 </div>
 
                 {event.club_id?.name && (
-                  <div className="mt-6 pt-4 border-t border-gray-800 flex items-center justify-between text-xs">
-                    <span className="text-gray-400">Organizing Club:</span>
-                    <span className="font-semibold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-full border border-indigo-500/20">
+                  <div className="mt-6 pt-4 border-t border-border flex items-center justify-between text-xs">
+                    <span className="text-muted-foreground">Organizing Club:</span>
+                    <span className="font-semibold text-primary bg-primary/10 px-2.5 py-1 rounded-full border border-primary/20">
                       {event.club_id.name}
                     </span>
                   </div>
@@ -250,17 +250,17 @@ export default function PublicEventPage() {
 
               {/* QR Ticket Output display if issued */}
               {issuedTicket && qrCodeUrl && (
-                <div className="bg-gray-900/90 border-2 border-emerald-500/40 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
-                  <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold border border-emerald-500/30">
+                <div className="bg-card border-2 border-emerald-500/40 rounded-2xl p-6 text-center space-y-4 shadow-2xl">
+                  <div className="inline-flex items-center gap-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 px-4 py-1.5 rounded-full text-xs font-bold border border-emerald-500/30">
                     <CheckCircle2 className="w-4 h-4" />
                     Registration Confirmed — Pass Ready
                   </div>
 
-                  <h3 className="text-lg font-bold text-white">Your Event Entry QR Ticket</h3>
+                  <h3 className="text-lg font-bold text-card-foreground">Your Event Entry QR Ticket</h3>
                   <div className="bg-white p-4 rounded-xl inline-block shadow-inner mx-auto">
                     <img src={qrCodeUrl} alt="Event QR Ticket" className="w-48 h-48 mx-auto" />
                   </div>
-                  <p className="text-xs text-gray-400 max-w-sm mx-auto">
+                  <p className="text-xs text-muted-foreground max-w-sm mx-auto">
                     Present this QR code at the venue scanner for check-in validation.
                   </p>
                 </div>
@@ -269,33 +269,33 @@ export default function PublicEventPage() {
 
             {/* Right Interactive Form Box */}
             <div className="space-y-6">
-              <div className="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 backdrop-blur-sm sticky top-24">
-                <div className="flex items-center justify-between mb-4 pb-3 border-b border-gray-800">
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <div className="bg-card border border-border rounded-2xl p-6 backdrop-blur-sm sticky top-24 shadow-sm">
+                <div className="flex items-center justify-between mb-4 pb-3 border-b border-border">
+                  <h3 className="text-lg font-bold text-card-foreground flex items-center gap-2">
                     <TicketIcon className="w-5 h-5" style={{ color: accentColor }} />
                     {isFull ? 'Waitlist Registration' : 'Event Registration'}
                   </h3>
 
                   {isFull ? (
-                    <span className="text-xs font-bold text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
+                    <span className="text-xs font-bold text-amber-600 dark:text-amber-400 bg-amber-500/10 px-2.5 py-1 rounded-full border border-amber-500/20">
                       Event Full
                     </span>
                   ) : (
-                    <span className="text-xs font-bold text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                    <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
                       Available
                     </span>
                   )}
                 </div>
 
                 {successMessage && (
-                  <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 p-3 rounded-xl text-xs mb-4 flex items-center gap-2">
+                  <div className="bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 p-3 rounded-xl text-xs mb-4 flex items-center gap-2">
                     <CheckCircle2 className="w-4 h-4 shrink-0" />
                     <span>{successMessage}</span>
                   </div>
                 )}
 
                 {formError && (
-                  <div className="bg-red-500/10 border border-red-500/30 text-red-400 p-3 rounded-xl text-xs mb-4 flex items-center gap-2">
+                  <div className="bg-destructive/10 border border-destructive/30 text-destructive p-3 rounded-xl text-xs mb-4 flex items-center gap-2">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>{formError}</span>
                   </div>
@@ -303,26 +303,26 @@ export default function PublicEventPage() {
 
                 <form onSubmit={handleRegister} className="space-y-4">
                   <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1.5">Full Name</label>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Full Name</label>
                     <input
                       type="text"
                       required
                       placeholder="Jane Doe"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                     />
                   </div>
 
                   <div>
-                    <label className="block text-xs font-semibold text-gray-300 mb-1.5">Email Address</label>
+                    <label className="block text-xs font-semibold text-muted-foreground mb-1.5">Email Address</label>
                     <input
                       type="email"
                       required
                       placeholder="jane@example.com"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-indigo-500"
+                      className="w-full bg-muted border border-border rounded-xl px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-ring"
                     />
                   </div>
 
@@ -342,12 +342,12 @@ export default function PublicEventPage() {
                   </button>
                 </form>
 
-                <div className="mt-6 pt-4 border-t border-gray-800">
+                <div className="mt-6 pt-4 border-t border-border">
                   <button
                     type="button"
                     onClick={handleCancelRegistration}
                     disabled={submitting || !email}
-                    className="text-xs text-gray-400 hover:text-red-400 transition w-full text-center py-1 font-medium disabled:opacity-40"
+                    className="text-xs text-muted-foreground hover:text-destructive transition w-full text-center py-1 font-medium disabled:opacity-40"
                   >
                     Need to cancel existing registration? Click here
                   </button>

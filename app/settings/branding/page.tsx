@@ -115,9 +115,9 @@ export default function BrandingSettingsPage() {
 
   if (status === 'loading' || (session && !['orgAdmin', 'superAdmin'].includes(session.user?.role || ''))) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white">
+      <div className="min-h-screen bg-background text-foreground">
         <Navigation />
-        <div className="max-w-4xl mx-auto px-4 py-16 text-center text-gray-400">
+        <div className="max-w-4xl mx-auto px-4 py-16 text-center text-muted-foreground">
           Checking authorization...
         </div>
       </div>
@@ -125,17 +125,17 @@ export default function BrandingSettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white pb-16">
+    <div className="min-h-screen bg-background text-foreground pb-16">
       <Navigation />
 
       <main className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <Palette className="w-8 h-8 text-indigo-500" />
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
+              <Palette className="w-8 h-8 text-primary" />
               Custom Org Branding
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               Customize your organization&apos;s public landing pages, accent color, and brand logo.
             </p>
           </div>
@@ -144,7 +144,7 @@ export default function BrandingSettingsPage() {
             <Link
               href={`/org/${orgSlug}`}
               target="_blank"
-              className="bg-gray-800 hover:bg-gray-700 text-gray-200 border border-gray-700 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition"
+              className="bg-card hover:bg-muted text-card-foreground border border-border px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition"
             >
               View Public Page
               <ExternalLink className="w-4 h-4" />
@@ -153,14 +153,14 @@ export default function BrandingSettingsPage() {
         </div>
 
         {loading ? (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center text-gray-400">
+          <div className="bg-card border border-border rounded-xl p-12 text-center text-muted-foreground">
             Loading organization settings...
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Branding Controls Form */}
-            <div className="bg-gray-900/70 border border-gray-800 rounded-2xl p-6 sm:p-8 backdrop-blur-sm">
-              <h2 className="text-xl font-bold text-white mb-6 flex items-center gap-2">
+            <div className="bg-card border border-border rounded-2xl p-6 sm:p-8 backdrop-blur-sm shadow-sm">
+              <h2 className="text-xl font-bold text-card-foreground mb-6 flex items-center gap-2">
                 Brand Customization
               </h2>
 
@@ -168,8 +168,8 @@ export default function BrandingSettingsPage() {
                 <div
                   className={`p-4 rounded-xl text-xs mb-6 flex items-center gap-2 ${
                     message.type === 'success'
-                      ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-400'
-                      : 'bg-red-500/10 border border-red-500/30 text-red-400'
+                      ? 'bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                      : 'bg-destructive/10 border border-destructive/30 text-destructive'
                   }`}
                 >
                   {message.type === 'success' ? (
@@ -184,7 +184,7 @@ export default function BrandingSettingsPage() {
               <form onSubmit={handleSave} className="space-y-6">
                 {/* Logo Section */}
                 <div>
-                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                     Organization Logo
                   </label>
                   <div className="space-y-3">
@@ -193,16 +193,16 @@ export default function BrandingSettingsPage() {
                         <img
                           src={logoUrl}
                           alt="Logo Preview"
-                          className="w-16 h-16 rounded-xl object-cover border-2 border-gray-700"
+                          className="w-16 h-16 rounded-xl object-cover border-2 border-border"
                         />
                       ) : (
-                        <div className="w-16 h-16 rounded-xl bg-gray-800 border-2 border-dashed border-gray-700 flex items-center justify-center text-gray-500">
+                        <div className="w-16 h-16 rounded-xl bg-muted border-2 border-dashed border-border flex items-center justify-center text-muted-foreground">
                           <ImageIcon className="w-6 h-6" />
                         </div>
                       )}
 
                       <div className="flex-1">
-                        <label className="bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2 rounded-lg font-semibold text-xs inline-flex items-center gap-2 cursor-pointer transition shadow-md">
+                        <label className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 py-2 rounded-lg font-semibold text-xs inline-flex items-center gap-2 cursor-pointer transition shadow-md">
                           <Upload className="w-4 h-4" />
                           Upload Logo Image
                           <input
@@ -212,14 +212,14 @@ export default function BrandingSettingsPage() {
                             className="hidden"
                           />
                         </label>
-                        <p className="text-gray-400 text-xs mt-1.5">
+                        <p className="text-muted-foreground text-xs mt-1.5">
                           PNG, JPG or SVG up to 5MB. Cloudinary hosted.
                         </p>
                       </div>
                     </div>
 
                     <div>
-                      <span className="text-xs text-gray-400">Or paste Logo Image URL:</span>
+                      <span className="text-xs text-muted-foreground">Or paste Logo Image URL:</span>
                       <input
                         type="url"
                         placeholder="https://example.com/logo.png"
@@ -228,18 +228,18 @@ export default function BrandingSettingsPage() {
                           setLogoUrl(e.target.value);
                           setLogoFile('');
                         }}
-                        className="w-full bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2 text-xs text-white focus:outline-none focus:border-indigo-500 mt-1"
+                        className="w-full bg-muted border border-border rounded-xl px-3.5 py-2 text-xs text-foreground focus:outline-none focus:border-ring mt-1"
                       />
                     </div>
                   </div>
                 </div>
 
                 {/* Accent Color Section */}
-                <div className="pt-4 border-t border-gray-800">
-                  <label className="block text-xs font-bold text-gray-300 uppercase tracking-wider mb-2">
+                <div className="pt-4 border-t border-border">
+                  <label className="block text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
                     Brand Accent Color
                   </label>
-                  <p className="text-gray-400 text-xs mb-3">
+                  <p className="text-muted-foreground text-xs mb-3">
                     Select a preset swatch or pick a custom hex color.
                   </p>
 
@@ -251,7 +251,7 @@ export default function BrandingSettingsPage() {
                         onClick={() => setAccentColor(hex)}
                         className={`w-9 h-9 rounded-xl transition transform hover:scale-105 flex items-center justify-center ${
                           accentColor.toLowerCase() === hex.toLowerCase()
-                            ? 'ring-2 ring-white scale-110 shadow-lg'
+                            ? 'ring-2 ring-foreground scale-110 shadow-lg'
                             : 'opacity-80 hover:opacity-100'
                         }`}
                         style={{ backgroundColor: hex }}
@@ -274,17 +274,17 @@ export default function BrandingSettingsPage() {
                       type="text"
                       value={accentColor}
                       onChange={(e) => setAccentColor(e.target.value)}
-                      className="bg-gray-950 border border-gray-800 rounded-xl px-3.5 py-2 text-xs text-white font-mono uppercase focus:outline-none focus:border-indigo-500 w-32"
+                      className="bg-muted border border-border rounded-xl px-3.5 py-2 text-xs text-foreground font-mono uppercase focus:outline-none focus:border-ring w-32"
                     />
                   </div>
                 </div>
 
                 {/* Save Button */}
-                <div className="pt-6 border-t border-gray-800">
+                <div className="pt-6 border-t border-border">
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full py-3 px-4 rounded-xl text-white font-bold text-sm bg-indigo-600 hover:bg-indigo-500 shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
+                    className="w-full py-3 px-4 rounded-xl text-primary-foreground font-bold text-sm bg-primary hover:bg-primary/90 shadow-lg transition flex items-center justify-center gap-2 disabled:opacity-50"
                   >
                     {saving ? <RefreshCw className="w-4 h-4 animate-spin" /> : 'Save Branding Changes'}
                   </button>
@@ -294,23 +294,23 @@ export default function BrandingSettingsPage() {
 
             {/* Live Branding Preview Card */}
             <div className="space-y-4">
-              <h2 className="text-xl font-bold text-white flex items-center gap-2">
+              <h2 className="text-xl font-bold text-foreground flex items-center gap-2">
                 Live Preview
               </h2>
 
-              <div className="bg-gray-900 border border-gray-800 rounded-2xl overflow-hidden shadow-2xl">
+              <div className="bg-card border border-border rounded-2xl overflow-hidden shadow-2xl">
                 {/* Mock Banner */}
                 <div
                   className="py-10 px-6 text-center relative"
                   style={{
-                    background: `radial-gradient(circle at top center, ${accentColor}40 0%, rgba(17,24,39,1) 80%)`,
+                    background: `radial-gradient(circle at top center, ${accentColor}40 0%, var(--card) 80%)`,
                   }}
                 >
                   {logoUrl ? (
                     <img
                       src={logoUrl}
                       alt="Org Logo"
-                      className="w-16 h-16 rounded-2xl mx-auto mb-3 border-2 border-white/20 shadow-xl object-cover"
+                      className="w-16 h-16 rounded-2xl mx-auto mb-3 border-2 border-border/50 shadow-xl object-cover"
                     />
                   ) : (
                     <div
@@ -321,15 +321,15 @@ export default function BrandingSettingsPage() {
                     </div>
                   )}
 
-                  <h3 className="text-2xl font-extrabold text-white">{orgName || 'Organization Name'}</h3>
-                  <p className="text-xs text-gray-400 mt-1">Public Landing Page Header</p>
+                  <h3 className="text-2xl font-extrabold text-card-foreground">{orgName || 'Organization Name'}</h3>
+                  <p className="text-xs text-muted-foreground mt-1">Public Landing Page Header</p>
                 </div>
 
                 {/* Mock Card Content */}
-                <div className="p-6 space-y-4 bg-gray-950">
-                  <div className="bg-gray-900 border border-gray-800 rounded-xl p-4 space-y-3">
+                <div className="p-6 space-y-4 bg-muted/30">
+                  <div className="bg-card border border-border rounded-xl p-4 space-y-3">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs font-semibold text-gray-400">Sample Event</span>
+                      <span className="text-xs font-semibold text-muted-foreground">Sample Event</span>
                       <span
                         className="text-xs font-bold px-2 py-0.5 rounded text-white"
                         style={{ backgroundColor: accentColor }}
@@ -338,8 +338,8 @@ export default function BrandingSettingsPage() {
                       </span>
                     </div>
 
-                    <h4 className="text-base font-bold text-white">Annual Tech Hackathon 2026</h4>
-                    <p className="text-xs text-gray-400">Open registration for community members.</p>
+                    <h4 className="text-base font-bold text-card-foreground">Annual Tech Hackathon 2026</h4>
+                    <p className="text-xs text-muted-foreground">Open registration for community members.</p>
 
                     <button
                       type="button"

@@ -75,19 +75,19 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
 
   if (loading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-950 text-white">
-        <p className="text-gray-400">Generating your JWT QR Code Ticket...</p>
+      <main className="flex min-h-screen items-center justify-center bg-background text-foreground">
+        <p className="text-muted-foreground">Generating your JWT QR Code Ticket...</p>
       </main>
     );
   }
 
   if (error || !ticket || !event) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-gray-950 text-white p-4">
-        <Card className="bg-gray-900 border-gray-800 text-white p-6 max-w-md w-full text-center">
-          <p className="text-red-400 mb-4">{error || 'Ticket not found.'}</p>
+      <main className="flex min-h-screen items-center justify-center bg-background text-foreground p-4">
+        <Card className="bg-card border-border text-card-foreground p-6 max-w-md w-full text-center">
+          <p className="text-destructive mb-4">{error || 'Ticket not found.'}</p>
           <Link href={`/events/${id}`}>
-            <Button className="bg-indigo-600 hover:bg-indigo-700">Back to Event</Button>
+            <Button className="bg-primary text-primary-foreground hover:bg-primary/90">Back to Event</Button>
           </Link>
         </Card>
       </main>
@@ -95,18 +95,18 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
   }
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center bg-gray-950 text-white p-4">
+    <main className="flex min-h-screen flex-col items-center justify-center bg-background text-foreground p-4">
       <div className="max-w-md w-full space-y-6">
 
-        <Link href={`/events/${id}`} className="text-xs text-indigo-400 hover:underline flex items-center gap-1 font-semibold">
+        <Link href={`/events/${id}`} className="text-xs text-primary hover:underline flex items-center gap-1 font-semibold">
           ← Back to Event Page
         </Link>
 
-        <Card className="bg-gray-900 border-gray-800 text-white shadow-2xl overflow-hidden">
-          <CardHeader className="bg-indigo-950/60 border-b border-gray-800 text-center pb-4">
-            <span className="text-xs font-extrabold uppercase tracking-widest text-indigo-400">Official Entry Pass</span>
-            <CardTitle className="text-2xl font-bold mt-1">{event.title}</CardTitle>
-            <CardDescription className="text-gray-400 text-xs mt-1">
+        <Card className="bg-card border-border text-card-foreground shadow-2xl overflow-hidden">
+          <CardHeader className="bg-primary/10 border-b border-border text-center pb-4">
+            <span className="text-xs font-extrabold uppercase tracking-widest text-primary">Official Entry Pass</span>
+            <CardTitle className="text-2xl font-bold mt-1 text-card-foreground">{event.title}</CardTitle>
+            <CardDescription className="text-muted-foreground text-xs mt-1">
               {new Date(event.start_time).toLocaleString()}
             </CardDescription>
           </CardHeader>
@@ -118,8 +118,8 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
               <span
                 className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider ${
                   ticket.used
-                    ? 'bg-yellow-950 text-yellow-400 border border-yellow-800'
-                    : 'bg-emerald-950 text-emerald-400 border border-emerald-800'
+                    ? 'bg-amber-500/10 text-amber-700 dark:text-amber-400 border border-amber-500/30'
+                    : 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30'
                 }`}
               >
                 {ticket.used ? `Used on ${new Date(ticket.used_at!).toLocaleTimeString()}` : 'Valid for Entry ✅'}
@@ -127,23 +127,23 @@ export default function TicketPage({ params }: { params: Promise<{ id: string }>
             </div>
 
             {/* QR Code Graphic Container */}
-            <div className="bg-white p-4 rounded-2xl shadow-inner border-4 border-indigo-600/30">
+            <div className="bg-white p-4 rounded-2xl shadow-inner border-4 border-primary/30">
               {qrDataUrl && (
                 <img src={qrDataUrl} alt="JWT QR Code" className="w-64 h-64 mx-auto rounded" />
               )}
             </div>
 
-            <div className="text-xs text-gray-400 space-y-1 font-mono bg-gray-950 p-3 rounded border border-gray-800 w-full text-center">
-              <div>Ticket ID: <span className="text-white font-bold">{ticket._id}</span></div>
-              <div className="text-[10px] text-gray-500 truncate">SHA-256 Validated • Single-Use Encrypted Pass</div>
+            <div className="text-xs text-muted-foreground space-y-1 font-mono bg-muted p-3 rounded border border-border w-full text-center">
+              <div>Ticket ID: <span className="text-foreground font-bold">{ticket._id}</span></div>
+              <div className="text-[10px] text-muted-foreground truncate">SHA-256 Validated • Single-Use Encrypted Pass</div>
             </div>
 
             {/* Copy JWT Token Helper for testing scanner manually */}
-            <div className="w-full pt-2 border-t border-gray-800">
+            <div className="w-full pt-2 border-t border-border">
               <Button
                 onClick={copyTokenToClipboard}
                 variant="outline"
-                className="w-full border-gray-700 text-gray-300 hover:bg-gray-800 text-xs"
+                className="w-full border-border text-foreground hover:bg-muted text-xs"
               >
                 {copied ? 'Copied Token to Clipboard! ✓' : '📋 Copy Raw JWT Token String'}
               </Button>

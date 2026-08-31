@@ -154,9 +154,9 @@ export default function AnalyticsDashboard() {
 
   if (status === 'loading' || (session && !['orgAdmin', 'superAdmin'].includes(session.user?.role || ''))) {
     return (
-      <div className="min-h-screen bg-gray-950 text-white">
+      <div className="min-h-screen bg-background text-foreground">
         <Navigation />
-        <div className="max-w-7xl mx-auto px-4 py-16 text-center text-gray-400">
+        <div className="max-w-7xl mx-auto px-4 py-16 text-center text-muted-foreground">
           Loading analytics & checking authorization...
         </div>
       </div>
@@ -164,25 +164,25 @@ export default function AnalyticsDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-950 text-white pb-16">
+    <div className="min-h-screen bg-background text-foreground pb-16">
       <Navigation />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
         {/* Header Bar */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-8">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight text-white flex items-center gap-3">
-              <TrendingUp className="w-8 h-8 text-indigo-500" />
+            <h1 className="text-3xl font-extrabold tracking-tight text-foreground flex items-center gap-3">
+              <TrendingUp className="w-8 h-8 text-primary" />
               Analytics Dashboard
             </h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <p className="text-muted-foreground text-sm mt-1">
               Real-time multi-tenant data, booking trends, peak usage hours & resource metrics.
             </p>
           </div>
 
           <div className="flex items-center gap-3 w-full sm:w-auto">
             {/* Time Filter Dropdown */}
-            <div className="bg-gray-900 border border-gray-800 rounded-lg p-1 flex items-center text-sm">
+            <div className="bg-card border border-border rounded-lg p-1 flex items-center text-sm">
               {[
                 { label: '7 Days', days: 7 },
                 { label: '30 Days', days: 30 },
@@ -193,8 +193,8 @@ export default function AnalyticsDashboard() {
                   onClick={() => setDaysFilter(btn.days)}
                   className={`px-3 py-1.5 rounded-md font-medium transition ${
                     daysFilter === btn.days
-                      ? 'bg-indigo-600 text-white shadow-sm'
-                      : 'text-gray-400 hover:text-white'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'text-muted-foreground hover:text-foreground'
                   }`}
                 >
                   {btn.label}
@@ -205,7 +205,7 @@ export default function AnalyticsDashboard() {
             {/* CSV Export Button */}
             <button
               onClick={exportCSV}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition shadow-md"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 transition shadow-md"
             >
               <Download className="w-4 h-4" />
               Export CSV
@@ -215,62 +215,62 @@ export default function AnalyticsDashboard() {
 
         {/* Metric Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-          <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-5 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-xl p-5 backdrop-blur-sm shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                 Total Bookings
               </span>
-              <div className="p-2 bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20">
+              <div className="p-2 bg-primary/10 text-primary rounded-lg border border-primary/20">
                 <Calendar className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-white mt-3">{summary.totalBookings}</p>
-            <span className="text-xs text-indigo-400 font-medium mt-1 inline-block">
+            <p className="text-3xl font-extrabold text-card-foreground mt-3">{summary.totalBookings}</p>
+            <span className="text-xs text-primary font-medium mt-1 inline-block">
               Across all resources
             </span>
           </div>
 
-          <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-5 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-xl p-5 backdrop-blur-sm shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                 Total Events
               </span>
-              <div className="p-2 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20">
+              <div className="p-2 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 rounded-lg border border-emerald-500/20">
                 <Layers className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-white mt-3">{summary.totalEvents}</p>
-            <span className="text-xs text-emerald-400 font-medium mt-1 inline-block">
+            <p className="text-3xl font-extrabold text-card-foreground mt-3">{summary.totalEvents}</p>
+            <span className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1 inline-block">
               Scheduled & completed
             </span>
           </div>
 
-          <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-5 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-xl p-5 backdrop-blur-sm shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                 Total Members
               </span>
-              <div className="p-2 bg-purple-500/10 text-purple-400 rounded-lg border border-purple-500/20">
+              <div className="p-2 bg-purple-500/10 text-purple-600 dark:text-purple-400 rounded-lg border border-purple-500/20">
                 <Users className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-white mt-3">{summary.totalMembers}</p>
-            <span className="text-xs text-purple-400 font-medium mt-1 inline-block">
+            <p className="text-3xl font-extrabold text-card-foreground mt-3">{summary.totalMembers}</p>
+            <span className="text-xs text-purple-600 dark:text-purple-400 font-medium mt-1 inline-block">
               Active org users
             </span>
           </div>
 
-          <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-5 backdrop-blur-sm">
+          <div className="bg-card border border-border rounded-xl p-5 backdrop-blur-sm shadow-sm">
             <div className="flex items-center justify-between">
-              <span className="text-gray-400 text-xs font-semibold uppercase tracking-wider">
+              <span className="text-muted-foreground text-xs font-semibold uppercase tracking-wider">
                 Active Resources
               </span>
-              <div className="p-2 bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20">
+              <div className="p-2 bg-amber-500/10 text-amber-600 dark:text-amber-400 rounded-lg border border-amber-500/20">
                 <Building className="w-5 h-5" />
               </div>
             </div>
-            <p className="text-3xl font-extrabold text-white mt-3">{summary.activeResources}</p>
-            <span className="text-xs text-amber-400 font-medium mt-1 inline-block">
+            <p className="text-3xl font-extrabold text-card-foreground mt-3">{summary.activeResources}</p>
+            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium mt-1 inline-block">
               Ready for booking
             </span>
           </div>
@@ -278,20 +278,20 @@ export default function AnalyticsDashboard() {
 
         {/* Loading State for Charts */}
         {loading ? (
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-12 text-center text-gray-400">
+          <div className="bg-card border border-border rounded-xl p-12 text-center text-muted-foreground">
             Fetching organization analytics pipelines...
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
             {/* Line Chart: Bookings Over Time */}
-            <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 backdrop-blur-sm lg:col-span-2">
+            <div className="bg-card border border-border rounded-xl p-6 backdrop-blur-sm lg:col-span-2">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <TrendingUp className="w-5 h-5 text-indigo-400" />
+                  <h3 className="text-lg font-bold text-card-foreground flex items-center gap-2">
+                    <TrendingUp className="w-5 h-5 text-primary" />
                     Bookings Over Time (Last {daysFilter} Days)
                   </h3>
-                  <p className="text-gray-400 text-xs mt-0.5">
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     Daily breakdown of resource reservations
                   </p>
                 </div>
@@ -299,20 +299,20 @@ export default function AnalyticsDashboard() {
               <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={bookingTrends}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="date" stroke="#9CA3AF" tick={{ fontSize: 12 }} />
-                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} allowDecimals={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="date" stroke="var(--muted-foreground)" tick={{ fontSize: 12 }} />
+                    <YAxis stroke="var(--muted-foreground)" tick={{ fontSize: 12 }} allowDecimals={false} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }}
-                      labelStyle={{ color: '#F9FAFB' }}
+                      contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--card-foreground)' }}
+                      labelStyle={{ color: 'var(--card-foreground)' }}
                     />
                     <Line
                       type="monotone"
                       dataKey="count"
                       name="Bookings"
-                      stroke="#6366F1"
+                      stroke="#496f70"
                       strokeWidth={3}
-                      dot={{ r: 4, fill: '#6366F1' }}
+                      dot={{ r: 4, fill: '#496f70' }}
                       activeDot={{ r: 6 }}
                     />
                   </LineChart>
@@ -321,31 +321,31 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Bar Chart: Top 5 Resources */}
-            <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 backdrop-blur-sm">
+            <div className="bg-card border border-border rounded-xl p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <BarChart2 className="w-5 h-5 text-emerald-400" />
+                  <h3 className="text-lg font-bold text-card-foreground flex items-center gap-2">
+                    <BarChart2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     Top 5 Most Booked Resources
                   </h3>
-                  <p className="text-gray-400 text-xs mt-0.5">
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     Most frequently reserved spaces and equipment
                   </p>
                 </div>
               </div>
               <div className="h-72 w-full">
                 {topResources.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-gray-500 text-sm">
+                  <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                     No resource bookings recorded yet.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={topResources} layout="vertical">
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis type="number" stroke="#9CA3AF" allowDecimals={false} />
-                      <YAxis dataKey="name" type="category" stroke="#9CA3AF" tick={{ fontSize: 11 }} width={100} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis type="number" stroke="var(--muted-foreground)" allowDecimals={false} />
+                      <YAxis dataKey="name" type="category" stroke="var(--muted-foreground)" tick={{ fontSize: 11 }} width={100} />
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }}
+                        contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--card-foreground)' }}
                       />
                       <Bar dataKey="count" name="Bookings" fill="#10B981" radius={[0, 6, 6, 0]} />
                     </BarChart>
@@ -355,14 +355,14 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Bar Chart: Peak Hours */}
-            <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 backdrop-blur-sm">
+            <div className="bg-card border border-border rounded-xl p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Clock className="w-5 h-5 text-amber-400" />
+                  <h3 className="text-lg font-bold text-card-foreground flex items-center gap-2">
+                    <Clock className="w-5 h-5 text-amber-600 dark:text-amber-400" />
                     Peak Booking Hours (24h)
                   </h3>
-                  <p className="text-gray-400 text-xs mt-0.5">
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     Hours with highest booking concentrations
                   </p>
                 </div>
@@ -370,11 +370,11 @@ export default function AnalyticsDashboard() {
               <div className="h-72 w-full">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={peakHours}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                    <XAxis dataKey="hour" stroke="#9CA3AF" tick={{ fontSize: 10 }} />
-                    <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} allowDecimals={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                    <XAxis dataKey="hour" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} />
+                    <YAxis stroke="var(--muted-foreground)" tick={{ fontSize: 12 }} allowDecimals={false} />
                     <Tooltip
-                      contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }}
+                      contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--card-foreground)' }}
                     />
                     <Bar dataKey="count" name="Bookings" fill="#F59E0B" radius={[4, 4, 0, 0]} />
                   </BarChart>
@@ -383,21 +383,21 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Pie Chart: Activity by Club */}
-            <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 backdrop-blur-sm">
+            <div className="bg-card border border-border rounded-xl p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <PieIcon className="w-5 h-5 text-purple-400" />
+                  <h3 className="text-lg font-bold text-card-foreground flex items-center gap-2">
+                    <PieIcon className="w-5 h-5 text-purple-600 dark:text-purple-400" />
                     Activity by Club
                   </h3>
-                  <p className="text-gray-400 text-xs mt-0.5">
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     Event and booking breakdown across active clubs
                   </p>
                 </div>
               </div>
               <div className="h-72 w-full">
                 {clubActivity.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-gray-500 text-sm">
+                  <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                     No club activity recorded yet.
                   </div>
                 ) : (
@@ -419,9 +419,9 @@ export default function AnalyticsDashboard() {
                         ))}
                       </Pie>
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }}
+                        contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--card-foreground)' }}
                       />
-                      <Legend wrapperStyle={{ fontSize: '12px', color: '#9CA3AF' }} />
+                      <Legend wrapperStyle={{ fontSize: '12px', color: 'var(--muted-foreground)' }} />
                     </PieChart>
                   </ResponsiveContainer>
                 )}
@@ -429,35 +429,35 @@ export default function AnalyticsDashboard() {
             </div>
 
             {/* Bar Chart: Event Attendance Capacity */}
-            <div className="bg-gray-900/70 border border-gray-800 rounded-xl p-6 backdrop-blur-sm">
+            <div className="bg-card border border-border rounded-xl p-6 backdrop-blur-sm">
               <div className="flex items-center justify-between mb-6">
                 <div>
-                  <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                    <Users className="w-5 h-5 text-indigo-400" />
+                  <h3 className="text-lg font-bold text-card-foreground flex items-center gap-2">
+                    <Users className="w-5 h-5 text-primary" />
                     Event Attendance vs Capacity
                   </h3>
-                  <p className="text-gray-400 text-xs mt-0.5">
+                  <p className="text-muted-foreground text-xs mt-0.5">
                     Recent events registration performance
                   </p>
                 </div>
               </div>
               <div className="h-72 w-full">
                 {attendanceTrends.length === 0 ? (
-                  <div className="h-full flex items-center justify-center text-gray-500 text-sm">
+                  <div className="h-full flex items-center justify-center text-muted-foreground text-sm">
                     No event data available yet.
                   </div>
                 ) : (
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={attendanceTrends}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-                      <XAxis dataKey="title" stroke="#9CA3AF" tick={{ fontSize: 10 }} />
-                      <YAxis stroke="#9CA3AF" tick={{ fontSize: 12 }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" />
+                      <XAxis dataKey="title" stroke="var(--muted-foreground)" tick={{ fontSize: 10 }} />
+                      <YAxis stroke="var(--muted-foreground)" tick={{ fontSize: 12 }} />
                       <Tooltip
-                        contentStyle={{ backgroundColor: '#111827', borderColor: '#374151', borderRadius: '8px' }}
+                        contentStyle={{ backgroundColor: 'var(--card)', borderColor: 'var(--border)', borderRadius: '8px', color: 'var(--card-foreground)' }}
                       />
                       <Legend wrapperStyle={{ fontSize: '12px' }} />
-                      <Bar dataKey="attendees" name="Attendees" fill="#6366F1" radius={[4, 4, 0, 0]} />
-                      <Bar dataKey="capacity" name="Capacity" fill="#374151" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="attendees" name="Attendees" fill="#496f70" radius={[4, 4, 0, 0]} />
+                      <Bar dataKey="capacity" name="Capacity" fill="var(--muted)" radius={[4, 4, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 )}

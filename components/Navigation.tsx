@@ -111,7 +111,7 @@ export default function Navigation() {
             onClick={() => signOut({ callbackUrl: '/sign-in' })}
             className="hidden items-center gap-1.5 rounded-lg border border-border bg-muted/60 px-3.5 py-2 text-xs font-medium text-muted-foreground transition duration-200 hover:bg-muted hover:text-foreground sm:flex"
           >
-            <LogOut className="w-3.5 h-3.5 text-gray-400" />
+            <LogOut className="w-3.5 h-3.5 text-muted-foreground" />
             Sign Out
           </button>
 
@@ -121,7 +121,7 @@ export default function Navigation() {
             aria-label="Toggle Navigation Menu"
             className="rounded-lg border border-border bg-muted/60 p-2 text-muted-foreground hover:text-foreground focus:outline-none focus:ring-2 focus:ring-ring/50 lg:hidden"
           >
-            {mobileMenuOpen ? <X className="w-6 h-6 text-indigo-400" /> : <Menu className="w-6 h-6" />}
+            {mobileMenuOpen ? <X className="w-6 h-6 text-primary" /> : <Menu className="w-6 h-6" />}
           </button>
         </div>
       </div>
@@ -158,33 +158,33 @@ export default function Navigation() {
                     onClick={() => setMobileMenuOpen(false)}
                     className={`px-4 py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-between ${
                       isActive
-                        ? 'bg-indigo-600/30 text-indigo-200 border border-indigo-500/40'
-                        : 'text-gray-300 hover:bg-white/5 border border-transparent'
+                        ? 'bg-primary/10 text-primary border border-primary/30'
+                        : 'text-muted-foreground hover:bg-muted hover:text-foreground border border-transparent'
                     }`}
                   >
                     <div className="flex items-center gap-3">
-                      <Icon className={`w-5 h-5 ${isActive ? 'text-indigo-400' : 'text-gray-400'}`} />
+                      <Icon className={`w-5 h-5 ${isActive ? 'text-primary' : 'text-muted-foreground'}`} />
                       <span>{link.label}</span>
                       {link.isLive && (
-                        <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-300 rounded-full border border-emerald-500/30">
+                        <span className="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 rounded-full border border-emerald-500/30">
                           LIVE
                         </span>
                       )}
                     </div>
-                    <ChevronRight className="w-4 h-4 text-gray-500" />
+                    <ChevronRight className="w-4 h-4 text-muted-foreground" />
                   </Link>
                 );
               })}
             </div>
 
             {/* Mobile Sign Out */}
-            <div className="pt-2 border-t border-white/10">
+            <div className="pt-2 border-t border-border">
               <button
                 onClick={() => {
                   setMobileMenuOpen(false);
                   signOut({ callbackUrl: '/sign-in' });
                 }}
-                className="w-full py-3 px-4 rounded-xl bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 text-red-400 font-bold text-sm flex items-center justify-center gap-2 transition duration-200"
+                className="w-full py-3 px-4 rounded-xl bg-destructive/10 hover:bg-destructive/20 border border-destructive/20 text-destructive font-bold text-sm flex items-center justify-center gap-2 transition duration-200"
               >
                 <LogOut className="w-4 h-4" />
                 Sign Out Account

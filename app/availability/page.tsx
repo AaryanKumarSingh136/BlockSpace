@@ -221,14 +221,14 @@ export default function AvailabilityPage() {
   });
 
   return (
-    <main className="flex min-h-screen flex-col bg-gray-950 text-white p-4 md:p-8">
+    <main className="flex min-h-screen flex-col bg-background text-foreground p-4 md:p-8">
       <div className="max-w-6xl mx-auto w-full space-y-8">
 
         {/* Dashboard Header & Live Indicator */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gray-800 pb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border pb-6">
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Live Resource Availability</h1>
-            <p className="text-gray-400 text-sm mt-1">
+            <h1 className="text-3xl font-bold tracking-tight text-foreground">Live Resource Availability</h1>
+            <p className="text-muted-foreground text-sm mt-1">
               Real-time WebSocket dashboard for instant conflict-free resource tracking
             </p>
           </div>
@@ -238,13 +238,13 @@ export default function AvailabilityPage() {
             <div
               className={`flex items-center gap-2.5 px-3.5 py-1.5 rounded-full text-xs font-semibold border backdrop-blur-sm transition-all ${
                 isConnected
-                  ? 'bg-emerald-950/80 text-emerald-400 border-emerald-700/60 shadow-[0_0_12px_rgba(16,185,129,0.2)]'
-                  : 'bg-yellow-950/80 text-yellow-400 border-yellow-700/60'
+                  ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border-emerald-500/30'
+                  : 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border-amber-500/30'
               }`}
             >
               <span
                 className={`w-2.5 h-2.5 rounded-full ${
-                  isConnected ? 'bg-emerald-400 animate-pulse shadow-[0_0_8px_#34d399]' : 'bg-yellow-400'
+                  isConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
                 }`}
               />
               {isConnected ? 'Live Connected (Socket.io)' : 'Connecting to Server...'}
@@ -257,25 +257,25 @@ export default function AvailabilityPage() {
           <div
             className={`p-4 rounded-lg border text-sm font-medium flex items-center justify-between ${
               alertMsg.type === 'success'
-                ? 'bg-green-950/70 border-green-800 text-green-300'
-                : 'bg-red-950/70 border-red-800 text-red-300'
+                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+                : 'bg-destructive/10 border-destructive/30 text-destructive'
             }`}
           >
             <span>{alertMsg.text}</span>
-            <button onClick={() => setAlertMsg(null)} className="text-gray-400 hover:text-white">
+            <button onClick={() => setAlertMsg(null)} className="text-muted-foreground hover:text-foreground">
               ✕
             </button>
           </div>
         )}
 
         {/* Filters Toolbar */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-gray-900/60 p-4 rounded-xl border border-gray-800">
+        <div className="flex flex-col sm:flex-row gap-4 justify-between items-center bg-card/60 p-4 rounded-xl border border-border">
           <div className="flex items-center gap-2 w-full sm:w-auto">
             <Input
               placeholder="Search resource name..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="bg-gray-800 border-gray-700 text-white w-full sm:w-64"
+              className="bg-muted border-border text-foreground w-full sm:w-64"
             />
           </div>
 
@@ -286,8 +286,8 @@ export default function AvailabilityPage() {
                 onClick={() => setFilterType(type)}
                 className={`px-3 py-1.5 rounded-md text-xs font-semibold capitalize transition ${
                   filterType === type
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-gray-800 text-gray-400 hover:text-white hover:bg-gray-700'
+                    ? 'bg-primary text-primary-foreground'
+                    : 'bg-muted text-muted-foreground hover:text-foreground hover:bg-muted/80'
                 }`}
               >
                 {type}
@@ -298,9 +298,9 @@ export default function AvailabilityPage() {
 
         {/* Live Availability Grid */}
         {loading ? (
-          <div className="text-center text-gray-400 py-12">Loading live availability...</div>
+          <div className="text-center text-muted-foreground py-12">Loading live availability...</div>
         ) : filteredResources.length === 0 ? (
-          <Card className="bg-gray-900 border-gray-800 text-gray-400 p-8 text-center">
+          <Card className="bg-card border-border text-muted-foreground p-8 text-center">
             No resources match your search filter.
           </Card>
         ) : (
@@ -312,32 +312,32 @@ export default function AvailabilityPage() {
               return (
                 <Card
                   key={r._id}
-                  className={`bg-gray-900 border text-white transition-all hover:border-gray-700 flex flex-col justify-between ${
+                  className={`bg-card border text-card-foreground transition-all hover:border-ring flex flex-col justify-between ${
                     status === 'occupied'
-                      ? 'border-red-900/60 shadow-lg shadow-red-950/20'
+                      ? 'border-destructive/60'
                       : status === 'pending_approval'
-                      ? 'border-yellow-900/60'
-                      : 'border-gray-800'
+                      ? 'border-amber-500/60'
+                      : 'border-border'
                   }`}
                 >
                   <CardHeader className="pb-3">
                     <div className="flex items-center justify-between mb-1">
-                      <h3 className="font-bold text-lg">{r.name}</h3>
+                      <h3 className="font-bold text-lg text-card-foreground">{r.name}</h3>
                       <span
                         className={`text-xs px-2.5 py-0.5 rounded-full font-bold uppercase tracking-wider ${
                           status === 'available'
-                            ? 'bg-emerald-950 text-emerald-400 border border-emerald-800/80'
+                            ? 'bg-emerald-500/10 text-emerald-700 dark:text-emerald-300 border border-emerald-500/30'
                             : status === 'occupied'
-                            ? 'bg-red-950 text-red-400 border border-red-800/80'
+                            ? 'bg-destructive/10 text-destructive border border-destructive/30'
                             : status === 'pending_approval'
-                            ? 'bg-yellow-950 text-yellow-400 border border-yellow-800/80'
-                            : 'bg-gray-800 text-gray-400'
+                            ? 'bg-amber-500/10 text-amber-700 dark:text-amber-300 border border-amber-500/30'
+                            : 'bg-muted text-muted-foreground'
                         }`}
                       >
                         {status.replace('_', ' ')}
                       </span>
                     </div>
-                    <CardDescription className="text-gray-400 text-xs capitalize flex items-center gap-2">
+                    <CardDescription className="text-muted-foreground text-xs capitalize flex items-center gap-2">
                       Type: {r.type} {r.capacity ? `• Capacity: ${r.capacity}` : ''}
                     </CardDescription>
                   </CardHeader>
@@ -345,17 +345,17 @@ export default function AvailabilityPage() {
                   <CardContent className="space-y-4 pt-0">
                     {/* Active Booking Details */}
                     {activeBooking ? (
-                      <div className="bg-gray-950/80 p-3 rounded-lg border border-gray-800 text-xs space-y-1">
-                        <div className="font-semibold text-white truncate">{activeBooking.title}</div>
-                        <div className="text-gray-400">
+                      <div className="bg-muted/60 p-3 rounded-lg border border-border text-xs space-y-1">
+                        <div className="font-semibold text-foreground truncate">{activeBooking.title}</div>
+                        <div className="text-muted-foreground">
                           Booked by:{' '}
-                          <span className="text-indigo-300">
+                          <span className="text-primary font-medium">
                             {typeof activeBooking.user_id === 'object'
                               ? activeBooking.user_id.name
                               : 'User'}
                           </span>
                         </div>
-                        <div className="text-gray-500 font-mono text-[11px]">
+                        <div className="text-muted-foreground font-mono text-[11px]">
                           {new Date(activeBooking.start_time).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
@@ -368,7 +368,7 @@ export default function AvailabilityPage() {
                         </div>
                       </div>
                     ) : (
-                      <div className="text-xs text-gray-500 italic py-2">
+                      <div className="text-xs text-muted-foreground italic py-2">
                         Currently clear & ready for instant booking.
                       </div>
                     )}
@@ -376,12 +376,12 @@ export default function AvailabilityPage() {
                     {/* Scoping Badges */}
                     <div className="flex flex-wrap gap-1.5">
                       {r.club_id?.name && (
-                        <span className="text-[11px] bg-indigo-950/70 text-indigo-300 border border-indigo-800/60 px-2 py-0.5 rounded">
+                        <span className="text-[11px] bg-primary/10 text-primary border border-primary/20 px-2 py-0.5 rounded font-medium">
                           {r.club_id.name}
                         </span>
                       )}
                       {r.dept_id?.name && (
-                        <span className="text-[11px] bg-purple-950/70 text-purple-300 border border-purple-800/60 px-2 py-0.5 rounded">
+                        <span className="text-[11px] bg-purple-500/10 text-purple-600 dark:text-purple-300 border border-purple-500/20 px-2 py-0.5 rounded font-medium">
                           {r.dept_id.name}
                         </span>
                       )}
@@ -402,8 +402,8 @@ export default function AvailabilityPage() {
                       }}
                       className={`w-full text-xs font-semibold ${
                         status === 'available'
-                          ? 'bg-indigo-600 hover:bg-indigo-700 text-white'
-                          : 'bg-gray-800 text-gray-400 hover:bg-gray-700'
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90'
+                          : 'bg-muted text-muted-foreground hover:bg-muted/80'
                       }`}
                     >
                       {status === 'available' ? 'Quick Book Now' : 'Book Conflict-Free Slot'}
@@ -419,11 +419,11 @@ export default function AvailabilityPage() {
 
       {/* Quick Booking Modal */}
       {selectedResource && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <div className="bg-gray-900 border border-gray-800 rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
+        <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <div className="bg-card border border-border text-card-foreground rounded-xl p-6 max-w-md w-full shadow-2xl space-y-4">
             <div>
-              <h2 className="text-xl font-bold">Book {selectedResource.name}</h2>
-              <p className="text-xs text-gray-400">
+              <h2 className="text-xl font-bold text-foreground">Book {selectedResource.name}</h2>
+              <p className="text-xs text-muted-foreground">
                 Optimistic update: Dashboard updates instantly across all connected clients.
               </p>
             </div>
@@ -435,7 +435,7 @@ export default function AvailabilityPage() {
                   placeholder="e.g. Team Planning Sync"
                   value={bookingForm.title}
                   onChange={(e) => setBookingForm({ ...bookingForm, title: e.target.value })}
-                  className="bg-gray-800 border-gray-700 text-white mt-1"
+                  className="bg-muted border-border text-foreground mt-1"
                   required
                 />
               </div>
@@ -447,7 +447,7 @@ export default function AvailabilityPage() {
                     type="datetime-local"
                     value={bookingForm.start_time}
                     onChange={(e) => setBookingForm({ ...bookingForm, start_time: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white text-xs mt-1"
+                    className="bg-muted border-border text-foreground text-xs mt-1"
                     required
                   />
                 </div>
@@ -457,7 +457,7 @@ export default function AvailabilityPage() {
                     type="datetime-local"
                     value={bookingForm.end_time}
                     onChange={(e) => setBookingForm({ ...bookingForm, end_time: e.target.value })}
-                    className="bg-gray-800 border-gray-700 text-white text-xs mt-1"
+                    className="bg-muted border-border text-foreground text-xs mt-1"
                     required
                   />
                 </div>
@@ -468,11 +468,11 @@ export default function AvailabilityPage() {
                   type="button"
                   variant="outline"
                   onClick={() => setSelectedResource(null)}
-                  className="border-gray-700 text-gray-300"
+                  className="border-border text-foreground hover:bg-muted"
                 >
                   Cancel
                 </Button>
-                <Button type="submit" className="bg-indigo-600 hover:bg-indigo-700" disabled={bookingLoading}>
+                <Button type="submit" className="bg-primary text-primary-foreground hover:bg-primary/90" disabled={bookingLoading}>
                   {bookingLoading ? 'Booking...' : 'Confirm Booking'}
                 </Button>
               </div>
